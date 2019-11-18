@@ -1,5 +1,8 @@
 package br.cesed.si.pp.controller.dto;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import br.cesed.si.pp.model.Exercicio;
 
 public class ExercicioDto {
@@ -18,6 +21,10 @@ public class ExercicioDto {
 
 	public String getNome() {
 		return nome;
+	}
+
+	public static List<ExercicioDto> conveter(List<Exercicio> exercicios) {
+		return exercicios.stream().map(ExercicioDto::new).collect(Collectors.toList());
 	}
 
 }

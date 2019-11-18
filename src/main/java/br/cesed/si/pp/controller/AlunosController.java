@@ -63,20 +63,21 @@ public class AlunosController {
 		Aluno aluno = alunoRepository.getOne(matricula);
 		return new DetalhesDoAlunoDto(aluno);
 	}
-	
+
 	@PutMapping("/{matricula}")
 	@Transactional
-	public ResponseEntity<AlunoDto> atualizar(@PathVariable Long matricula, @RequestBody @Valid AtualizaAlunoForm form) {
+	public ResponseEntity<AlunoDto> atualizar(@PathVariable Long matricula,
+			@RequestBody @Valid AtualizaAlunoForm form) {
 		Aluno aluno = form.atualizar(matricula, alunoRepository, treinoRepository);
 
 		return ResponseEntity.ok(new AlunoDto(aluno));
 	}
-	
+
 	@DeleteMapping("/{matricula}")
 	@Transactional
 	public ResponseEntity<?> remover(@PathVariable Long matricula) {
 		alunoRepository.deleteById(matricula);
-		
+
 		return ResponseEntity.ok().build();
 	}
 }

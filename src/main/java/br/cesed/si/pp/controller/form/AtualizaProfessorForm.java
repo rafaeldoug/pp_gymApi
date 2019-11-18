@@ -1,19 +1,16 @@
 package br.cesed.si.pp.controller.form;
 
-import java.sql.Date;
-
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import br.cesed.si.pp.model.Professor;
+import br.cesed.si.pp.repository.ProfessorRepository;
 
-public class ProfessorForm {
+public class AtualizaProfessorForm {
 
 	@NotNull @NotEmpty
 	private String nome;
 	private String endereco;
-	private Date dtNascimento;
-	private Double salario;
 
 	public String getNome() {
 		return nome;
@@ -31,24 +28,16 @@ public class ProfessorForm {
 		this.endereco = endereco;
 	}
 
-	public Date getDtNascimento() {
-		return dtNascimento;
+	public Professor atualizar(Long matricula, ProfessorRepository professorRepository) {
+		
+		Professor professor = professorRepository.getOne(matricula);
+		
+		professor.setNome(nome);
+		professor.setEndereco(endereco);
+		
+		return professor;
 	}
 
-	public void setDtNascimento(Date dtNascimento) {
-		this.dtNascimento = dtNascimento;
-	}
-
-	public Double getSalario() {
-		return salario;
-	}
-
-	public void setSalario(Double salario) {
-		this.salario = salario;
-	}
-
-	public Professor converter() {
-		return new Professor(nome, endereco, dtNascimento, salario);
-	}
+	
 
 }

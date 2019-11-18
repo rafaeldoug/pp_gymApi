@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import br.cesed.si.pp.controller.dto.DetalhesDoProfessorDto;
 import br.cesed.si.pp.controller.dto.ProfessorDto;
+import br.cesed.si.pp.controller.form.AtualizaProfessorForm;
 import br.cesed.si.pp.controller.form.ProfessorForm;
 import br.cesed.si.pp.model.Professor;
 import br.cesed.si.pp.repository.ProfessorRepository;
@@ -60,7 +62,18 @@ public class ProfessoresController {
 		return new DetalhesDoProfessorDto(professor);
 	}
 	
+	@PutMapping("/{matricula}")
+	@Transactional
+	public ResponseEntity<ProfessorDto> atualizar(@PathVariable Long matricula, @RequestBody  @Valid AtualizaProfessorForm form) {
+		Professor professor = form.atualizar(matricula, professorRepository);
+		
+		return ResponseEntity.ok(new ProfessorDto(professor));
+		
+	}
+	
+	
 	@DeleteMapping("/{matricula}")
+	@Transactional
 	public ResponseEntity<?> remover(@PathVariable Long matricula) {
 		professorRepository.deleteById(matricula);
 		

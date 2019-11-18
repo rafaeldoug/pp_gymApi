@@ -13,10 +13,12 @@ import br.cesed.si.pp.repository.TreinoRepository;
 
 public class AtualizaAlunoForm {
 
-	@NotNull @NotEmpty
+	@NotNull
+	@NotEmpty
 	private String nome;
 	private String endereco;
-	@NotNull @NotEmpty
+	@NotNull
+	@NotEmpty
 	private Date dtNascimento;
 	private Tipo tipo;
 	private Long treinoId;

@@ -11,7 +11,6 @@ public class DetalhesDoAlunoDto {
 	private String endereco;
 	private Date dtNascimento;
 	private String tipo;
-	private Long treinoId;
 
 	public DetalhesDoAlunoDto(Aluno aluno) {
 		this.matricula = aluno.getMatricula();
@@ -19,7 +18,6 @@ public class DetalhesDoAlunoDto {
 		this.endereco = aluno.getEndereco();
 		this.dtNascimento = aluno.getDtNascimento();
 		this.tipo = aluno.getTipo().name();
-		this.treinoId = aluno.getTreino().getId();
 	}
 
 	public Long getMatricula() {
@@ -40,10 +38,6 @@ public class DetalhesDoAlunoDto {
 
 	public String getTipo() {
 		return tipo;
-	}
-
-	public Long getTreinoId() {
-		return treinoId;
 	}
 
 }
