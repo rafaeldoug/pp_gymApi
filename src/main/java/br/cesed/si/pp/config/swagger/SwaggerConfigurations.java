@@ -17,10 +17,12 @@ import org.springframework.plugin.core.SimplePluginRegistry;
 import org.springframework.plugin.core.support.PluginRegistryFactoryBean;
 
 import br.cesed.si.pp.model.Usuario;
+import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.schema.ModelRef;
+import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -28,7 +30,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @Configuration
 public class SwaggerConfigurations {
-	
+
 	@Bean
 	public LinkDiscoverers discoverers() {
 		List<JsonPathLinkDiscoverer> plugins = new ArrayList<>();
@@ -40,20 +42,18 @@ public class SwaggerConfigurations {
 	public LinkRelationProvider provider() {
 		return new EvoInflectorLinkRelationProvider();
 	}
-	
+
 	@Bean
 	@Primary
-	public PluginRegistryFactoryBean<LinkRelationProvider, LinkRelationProvider.LookupContext>
-		myPluginRegistryProvider(){
-		
-		PluginRegistryFactoryBean<LinkRelationProvider, LinkRelationProvider.LookupContext> factory 
-			= new PluginRegistryFactoryBean<>();
-		
+	public PluginRegistryFactoryBean<LinkRelationProvider, LinkRelationProvider.LookupContext> myPluginRegistryProvider() {
+
+		PluginRegistryFactoryBean<LinkRelationProvider, LinkRelationProvider.LookupContext> factory = new PluginRegistryFactoryBean<>();
+
 		factory.setType(LinkRelationProvider.class);
-		Class<?> classes[] = new Class<?>[1]; 
+		Class<?> classes[] = new Class<?>[1];
 		classes[0] = DelegatingLinkRelationProvider.class;
 		factory.setExclusions(classes);
-		
+
 		return factory;
 	}
 
@@ -64,14 +64,20 @@ public class SwaggerConfigurations {
 				.paths(PathSelectors.ant("/**")).build()
 				.ignoredParameterTypes(Usuario.class)
 				.globalOperationParameters(
-						Arrays.asList(
-								new ParameterBuilder()
-								.name("Authorization")
-								.description("Header para Token JWT")
+						Arrays.asList(new ParameterBuilder()
+								.name("Authorization").description("Header para Token JWT")
 								.modelRef(new ModelRef("string"))
 								.parameterType("header")
 								.required(false)
-								.build()));
+								.build()))
+				.apiInfo(metaData());
+	}
+
+	private ApiInfo metaData() {
+		return new ApiInfoBuilder().title("Spring Boot REST API")
+				.description("\"Spring Boot REST API for Gym (Projeto PP)\"").version("0.0.1")
+				.license("Apache License Version 2.0").licenseUrl("https://www.apache.org/licenses/LICENSE-2.0\"")
+				.build();
 	}
 
 }
