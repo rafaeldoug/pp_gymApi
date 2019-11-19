@@ -4,7 +4,7 @@ import java.sql.Date;
 
 import br.cesed.si.pp.model.Aluno;
 import br.cesed.si.pp.model.Treino;
-import br.cesed.si.pp.model.enums.Tipo;
+import br.cesed.si.pp.model.enums.TipoAluno;
 import br.cesed.si.pp.repository.TreinoRepository;
 
 public class AlunoForm {
@@ -12,7 +12,7 @@ public class AlunoForm {
 	private String nome;
 	private String endereco;
 	private Date dtNascimento;
-	private Tipo tipo;
+	private TipoAluno tipo;
 	private Long treinoId;
 
 	public String getNome() {
@@ -39,11 +39,11 @@ public class AlunoForm {
 		this.dtNascimento = dtNascimento;
 	}
 
-	public Tipo getTipo() {
+	public TipoAluno getTipo() {
 		return tipo;
 	}
 
-	public void setTipo(Tipo tipo) {
+	public void setTipo(TipoAluno tipo) {
 		this.tipo = tipo;
 	}
 

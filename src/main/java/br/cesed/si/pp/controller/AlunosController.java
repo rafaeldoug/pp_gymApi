@@ -40,7 +40,7 @@ public class AlunosController {
 
 	@Autowired
 	private TreinoRepository treinoRepository;
-
+	
 	@GetMapping
 	public Page<AlunoDto> lista(@RequestParam(required = false) String nome,
 			@PageableDefault(sort = "matricula", direction = Direction.ASC, page = 0, size = 10) Pageable paginacao) {

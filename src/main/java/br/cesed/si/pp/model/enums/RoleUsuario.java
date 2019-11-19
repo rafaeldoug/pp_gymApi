@@ -1,8 +1,9 @@
 package br.cesed.si.pp.model.enums;
 
-public enum Tipo {
-
-	FUNCIONARIO,
+public enum RoleUsuario {
+	
 	PADRAO,
-	VIP
+	PROFESSOR,
+	ADMIN
+
 }

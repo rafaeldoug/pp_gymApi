@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 
 import br.cesed.si.pp.model.Aluno;
 import br.cesed.si.pp.model.Treino;
-import br.cesed.si.pp.model.enums.Tipo;
+import br.cesed.si.pp.model.enums.TipoAluno;
 import br.cesed.si.pp.repository.AlunoRepository;
 import br.cesed.si.pp.repository.TreinoRepository;
 
@@ -20,7 +20,7 @@ public class AtualizaAlunoForm {
 	@NotNull
 	@NotEmpty
 	private Date dtNascimento;
-	private Tipo tipo;
+	private TipoAluno tipo;
 	private Long treinoId;
 
 	public String getNome() {
@@ -47,11 +47,11 @@ public class AtualizaAlunoForm {
 		this.dtNascimento = dtNascimento;
 	}
 
-	public Tipo getTipo() {
+	public TipoAluno getTipo() {
 		return tipo;
 	}
 
-	public void setTipo(Tipo tipo) {
+	public void setTipo(TipoAluno tipo) {
 		this.tipo = tipo;
 	}
 

@@ -7,13 +7,13 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToOne;
 
-import br.cesed.si.pp.model.enums.Tipo;
+import br.cesed.si.pp.model.enums.TipoAluno;
 
 @Entity
 public class Aluno extends Pessoa {
 
 	@Enumerated(EnumType.STRING)
-	private Tipo tipo = Tipo.PADRAO;
+	private TipoAluno tipo = TipoAluno.PADRAO;
 	@OneToOne
 	private Treino treino;
 
@@ -21,7 +21,7 @@ public class Aluno extends Pessoa {
 		super();
 	}
 
-	public Aluno(String nome, String endereco, Date dtNascimento, Tipo tipo, Treino treino) {
+	public Aluno(String nome, String endereco, Date dtNascimento, TipoAluno tipo, Treino treino) {
 		super(nome, endereco, dtNascimento);
 		this.tipo = tipo;
 		this.treino = treino;
@@ -55,11 +55,11 @@ public class Aluno extends Pessoa {
 		return true;
 	}
 
-	public Tipo getTipo() {
+	public TipoAluno getTipo() {
 		return tipo;
 	}
 
-	public void setTipo(Tipo tipo) {
+	public void setTipo(TipoAluno tipo) {
 		this.tipo = tipo;
 	}
 
