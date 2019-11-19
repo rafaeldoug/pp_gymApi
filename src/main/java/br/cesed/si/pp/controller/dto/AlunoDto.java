@@ -1,7 +1,6 @@
 package br.cesed.si.pp.controller.dto;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
 
 import br.cesed.si.pp.model.Aluno;
 
@@ -35,8 +34,8 @@ public class AlunoDto {
 		return tipo;
 	}
 
-	public static List<AlunoDto> converter(List<Aluno> alunos) {
-		return alunos.stream().map(AlunoDto::new).collect(Collectors.toList());
+	public static Page<AlunoDto> converter(Page<Aluno> alunos) {
+		return alunos.map(AlunoDto::new);
 	}
 
 }

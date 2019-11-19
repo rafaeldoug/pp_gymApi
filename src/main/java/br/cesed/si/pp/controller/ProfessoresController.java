@@ -2,6 +2,7 @@ package br.cesed.si.pp.controller;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -44,40 +45,56 @@ public class ProfessoresController {
 		}
 
 	}
-	
+
 	@PostMapping
 	@Transactional
-	public ResponseEntity<ProfessorDto> cadastrar(@RequestBody @Valid ProfessorForm form, UriComponentsBuilder uriBuilder) {
+	public ResponseEntity<ProfessorDto> cadastrar(@RequestBody @Valid ProfessorForm form,
+			UriComponentsBuilder uriBuilder) {
 		Professor professor = form.converter();
 		professorRepository.save(professor);
-		
+
 		URI uri = uriBuilder.path("/professores/{matricula}").buildAndExpand(professor.getMatricula()).toUri();
 		return ResponseEntity.created(uri).body(new ProfessorDto(professor));
-		
+
 	}
 
 	@GetMapping("/{matricula}")
-	public DetalhesDoProfessorDto detalhar(@PathVariable Long matricula) {
-		Professor professor = professorRepository.getOne(matricula);
-		return new DetalhesDoProfessorDto(professor);
+	public ResponseEntity<DetalhesDoProfessorDto> detalhar(@PathVariable Long matricula) {
+		Optional<Professor> professor = professorRepository.findById(matricula);
+		if (professor.isPresent()) {
+			return ResponseEntity.ok(new DetalhesDoProfessorDto(professor.get()));
+		}
+
+		return ResponseEntity.notFound().build();
 	}
-	
+
 	@PutMapping("/{matricula}")
 	@Transactional
-	public ResponseEntity<ProfessorDto> atualizar(@PathVariable Long matricula, @RequestBody  @Valid AtualizaProfessorForm form) {
-		Professor professor = form.atualizar(matricula, professorRepository);
-		
-		return ResponseEntity.ok(new ProfessorDto(professor));
-		
+	public ResponseEntity<ProfessorDto> atualizar(@PathVariable Long matricula,
+			@RequestBody @Valid AtualizaProfessorForm form) {
+
+		Optional<Professor> optional = professorRepository.findById(matricula);
+		if (optional.isPresent()) {
+			Professor professor = form.atualizar(matricula, professorRepository);
+			return ResponseEntity.ok(new ProfessorDto(professor));
+		}
+
+		return ResponseEntity.notFound().build();
+
 	}
-	
-	
+
 	@DeleteMapping("/{matricula}")
 	@Transactional
 	public ResponseEntity<?> remover(@PathVariable Long matricula) {
-		professorRepository.deleteById(matricula);
-		
-		return ResponseEntity.ok().build();
+
+		Optional<Professor> optional = professorRepository.findById(matricula);
+		if (optional.isPresent()) {
+			professorRepository.deleteById(matricula);
+			return ResponseEntity.ok().build();
+		}
+
+		return ResponseEntity.notFound().build();
+
 	}
 
 }

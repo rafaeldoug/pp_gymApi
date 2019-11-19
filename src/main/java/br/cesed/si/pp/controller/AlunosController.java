@@ -1,12 +1,16 @@
 package br.cesed.si.pp.controller;
 
 import java.net.URI;
-import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -37,12 +42,14 @@ public class AlunosController {
 	private TreinoRepository treinoRepository;
 
 	@GetMapping
-	public List<AlunoDto> lista(String nome) {
+	public Page<AlunoDto> lista(@RequestParam(required = false) String nome,
+			@PageableDefault(sort = "matricula", direction = Direction.ASC, page = 0, size = 10) Pageable paginacao) {
+
 		if (nome == null) {
-			List<Aluno> alunos = alunoRepository.findAll();
+			Page<Aluno> alunos = alunoRepository.findAll(paginacao);
 			return AlunoDto.converter(alunos);
 		} else {
-			List<Aluno> alunos = alunoRepository.findByNome(nome);
+			Page<Aluno> alunos = alunoRepository.findByNome(nome, paginacao);
 			return AlunoDto.converter(alunos);
 		}
 
@@ -59,25 +66,41 @@ public class AlunosController {
 	}
 
 	@GetMapping("/{matricula}")
-	public DetalhesDoAlunoDto detalhar(@PathVariable Long matricula) {
-		Aluno aluno = alunoRepository.getOne(matricula);
-		return new DetalhesDoAlunoDto(aluno);
+	public ResponseEntity<DetalhesDoAlunoDto> detalhar(@PathVariable Long matricula) {
+		Optional<Aluno> aluno = alunoRepository.findById(matricula);
+		if (aluno.isPresent()) {
+			return ResponseEntity.ok(new DetalhesDoAlunoDto(aluno.get()));
+		}
+
+		return ResponseEntity.notFound().build();
 	}
 
 	@PutMapping("/{matricula}")
 	@Transactional
 	public ResponseEntity<AlunoDto> atualizar(@PathVariable Long matricula,
 			@RequestBody @Valid AtualizaAlunoForm form) {
-		Aluno aluno = form.atualizar(matricula, alunoRepository, treinoRepository);
 
-		return ResponseEntity.ok(new AlunoDto(aluno));
+		Optional<Aluno> optional = alunoRepository.findById(matricula);
+		if (optional.isPresent()) {
+			Aluno aluno = form.atualizar(matricula, alunoRepository, treinoRepository);
+			return ResponseEntity.ok(new AlunoDto(aluno));
+		}
+
+		return ResponseEntity.notFound().build();
+
 	}
 
 	@DeleteMapping("/{matricula}")
 	@Transactional
 	public ResponseEntity<?> remover(@PathVariable Long matricula) {
-		alunoRepository.deleteById(matricula);
 
-		return ResponseEntity.ok().build();
+		Optional<Aluno> optional = alunoRepository.findById(matricula);
+		if (optional.isPresent()) {
+			alunoRepository.deleteById(matricula);
+			return ResponseEntity.ok().build();
+		}
+
+		return ResponseEntity.notFound().build();
+
 	}
 }

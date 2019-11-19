@@ -2,6 +2,7 @@ package br.cesed.si.pp.controller;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -25,30 +26,34 @@ public class ExerciciosController {
 
 	@Autowired
 	ExercicioRepository exercicioRepository;
-	
+
 	@GetMapping
 	public List<ExercicioDto> lista() {
 		List<Exercicio> exercicios = exercicioRepository.findAll();
 		return ExercicioDto.conveter(exercicios);
 	}
-	
+
 	@PostMapping
 	@Transactional
 	public ResponseEntity<ExercicioDto> cadastrar(ExercicioForm form, UriComponentsBuilder uriBuilder) {
 		Exercicio exercicio = form.converter();
 		exercicioRepository.save(exercicio);
-		
+
 		URI uri = uriBuilder.path("/exercicios/{id}").buildAndExpand(exercicio.getId()).toUri();
-		return ResponseEntity.created(uri).body(new ExercicioDto(exercicio));		
+		return ResponseEntity.created(uri).body(new ExercicioDto(exercicio));
 	}
-	
+
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> remover(Long id) {
-		exercicioRepository.deleteById(id);
-		
-		return ResponseEntity.ok().build();
+
+		Optional<Exercicio> optional = exercicioRepository.findById(id);
+		if (optional.isPresent()) {
+			exercicioRepository.deleteById(id);
+			return ResponseEntity.ok().build();
+		}
+
+		return ResponseEntity.notFound().build();
 	}
-	
-	
+
 }

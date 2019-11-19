@@ -2,6 +2,7 @@ package br.cesed.si.pp.controller;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -26,39 +27,50 @@ import br.cesed.si.pp.repository.TreinoRepository;
 @RestController
 @RequestMapping("/treinos")
 public class TreinosController {
-	
+
 	@Autowired
 	private TreinoRepository treinoRepository;
 
 	@Autowired
 	private ProfessorRepository professorRepository;
-	
+
 	@GetMapping
 	public List<TreinoDto> lista() {
 		List<Treino> treinos = treinoRepository.findAll();
-		return  TreinoDto.converter(treinos);
+		return TreinoDto.converter(treinos);
 	}
 
 	@PostMapping
 	public ResponseEntity<TreinoDto> cadastrar(@RequestBody @Valid TreinoForm form, UriComponentsBuilder uriBuilder) {
 		Treino treino = form.converter(professorRepository);
 		treinoRepository.save(treino);
-		
+
 		URI uri = uriBuilder.path("/treinos/{id}").buildAndExpand(treino.getId()).toUri();
 		return ResponseEntity.created(uri).body(new TreinoDto(treino));
 	}
-	
+
 	@GetMapping("/{id}")
-	public DetalhesDoTreinoDto detalhar(@PathVariable Long id) {
-		Treino treino = treinoRepository.getOne(id);
-		return new DetalhesDoTreinoDto(treino);
+	public ResponseEntity<DetalhesDoTreinoDto> detalhar(@PathVariable Long id) {
+
+		Optional<Treino> treino = treinoRepository.findById(id);
+		if (treino.isPresent()) {
+			return ResponseEntity.ok(new DetalhesDoTreinoDto(treino.get()));
+		}
+
+		return ResponseEntity.notFound().build();
+
 	}
-	
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> remover(Long id) {
-		treinoRepository.deleteById(id);
-		
-		return ResponseEntity.ok().build();
+		Optional<Treino> treino = treinoRepository.findById(id);
+		if (treino.isPresent()) {
+			treinoRepository.deleteById(id);
+			return ResponseEntity.ok().build();
+		}
+
+		return ResponseEntity.notFound().build();
+
 	}
 
 }

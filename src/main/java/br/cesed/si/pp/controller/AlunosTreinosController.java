@@ -1,8 +1,12 @@
 package br.cesed.si.pp.controller;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,28 +24,33 @@ import br.cesed.si.pp.repository.TreinoRepository;
 @RestController
 @RequestMapping("/alunos-treinos")
 public class AlunosTreinosController {
-	
+
 	@Autowired
 	private AlunoRepository alunoRepository;
 
 	@Autowired
 	private TreinoRepository treinoRepository;
-	
+
 	@Autowired
 	private ProfessorRepository professorRepository;
-	
+
 	@GetMapping
-	public List<AlunoDto> lista(String nome) {
-			List<Aluno> alunos = alunoRepository.findAll();
-			return AlunoDto.converter(alunos);
-	}
-	
-	@GetMapping("/{matricula}")
-	public DetalhesAlunoTreinoDto detalhar(@PathVariable Long matricula) {
-		Aluno aluno = alunoRepository.getOne(matricula);
-		Treino treino = treinoRepository.getOne(aluno.getTreino().getId());
-		Professor professor = professorRepository.getOne(treino.getProfessor().getMatricula());
+	public Page<AlunoDto> lista(String nome, int pagina, int qtd) {
 		
-		return new DetalhesAlunoTreinoDto(aluno, treino, professor);
+		Pageable paginacao = PageRequest.of(pagina, qtd);
+		Page<Aluno> alunos = alunoRepository.findAll(paginacao);
+		return AlunoDto.converter(alunos);
+	}
+
+	@GetMapping("/{matricula}")
+	public ResponseEntity<DetalhesAlunoTreinoDto> detalhar(@PathVariable Long matricula) {
+		Optional<Aluno> aluno = alunoRepository.findById(matricula);
+		Optional<Treino> treino = treinoRepository.findById(aluno.get().getTreino().getId());
+		Optional<Professor> professor = professorRepository.findById(treino.get().getProfessor().getMatricula());
+		if (aluno.isPresent() && treino.isPresent() && professor.isPresent()) {
+			return ResponseEntity.ok(new DetalhesAlunoTreinoDto(aluno.get(), treino.get(), professor.get()));
+		}
+
+		return ResponseEntity.notFound().build();
 	}
 }
