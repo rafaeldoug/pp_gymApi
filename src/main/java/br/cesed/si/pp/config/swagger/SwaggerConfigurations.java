@@ -15,6 +15,8 @@ import org.springframework.hateoas.server.core.DelegatingLinkRelationProvider;
 import org.springframework.hateoas.server.core.EvoInflectorLinkRelationProvider;
 import org.springframework.plugin.core.SimplePluginRegistry;
 import org.springframework.plugin.core.support.PluginRegistryFactoryBean;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 import br.cesed.si.pp.model.Usuario;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -29,7 +31,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @EnableSwagger2
 @Configuration
-public class SwaggerConfigurations {
+public class SwaggerConfigurations extends WebMvcConfigurationSupport {
 
 	@Bean
 	public LinkDiscoverers discoverers() {
@@ -60,16 +62,11 @@ public class SwaggerConfigurations {
 	@Bean
 	public Docket gymApi() {
 		return new Docket(DocumentationType.SWAGGER_2).select()
-				.apis(RequestHandlerSelectors.basePackage("br.cesed.si.pp"))
-				.paths(PathSelectors.ant("/**")).build()
+				.apis(RequestHandlerSelectors.basePackage("br.cesed.si.pp")).paths(PathSelectors.ant("/**")).build()
 				.ignoredParameterTypes(Usuario.class)
 				.globalOperationParameters(
-						Arrays.asList(new ParameterBuilder()
-								.name("Authorization").description("Header para Token JWT")
-								.modelRef(new ModelRef("string"))
-								.parameterType("header")
-								.required(false)
-								.build()))
+						Arrays.asList(new ParameterBuilder().name("Authorization").description("Header para Token JWT")
+								.modelRef(new ModelRef("string")).parameterType("header").required(false).build()))
 				.apiInfo(metaData());
 	}
 
@@ -78,6 +75,13 @@ public class SwaggerConfigurations {
 				.description("\"Spring Boot REST API for Gym (Projeto PP)\"").version("0.0.1")
 				.license("Apache License Version 2.0").licenseUrl("https://www.apache.org/licenses/LICENSE-2.0\"")
 				.build();
+	}
+
+	@Override
+	protected void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+
+		registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
 	}
 
 }
