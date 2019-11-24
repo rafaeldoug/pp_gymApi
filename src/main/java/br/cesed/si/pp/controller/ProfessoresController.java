@@ -25,6 +25,7 @@ import br.cesed.si.pp.controller.form.AtualizaProfessorForm;
 import br.cesed.si.pp.controller.form.ProfessorForm;
 import br.cesed.si.pp.model.Professor;
 import br.cesed.si.pp.repository.ProfessorRepository;
+import br.cesed.si.pp.repository.UsuarioRepository;
 
 @RestController
 @RequestMapping("/professores")
@@ -32,6 +33,9 @@ public class ProfessoresController {
 
 	@Autowired
 	ProfessorRepository professorRepository;
+	
+	@Autowired
+	UsuarioRepository usuarioRepository;
 
 	@GetMapping
 	public List<ProfessorDto> lista(String nome) {
@@ -50,7 +54,7 @@ public class ProfessoresController {
 	@Transactional
 	public ResponseEntity<ProfessorDto> cadastrar(@RequestBody @Valid ProfessorForm form,
 			UriComponentsBuilder uriBuilder) {
-		Professor professor = form.converter();
+		Professor professor = form.converter(usuarioRepository);
 		professorRepository.save(professor);
 
 		URI uri = uriBuilder.path("/professores/{matricula}").buildAndExpand(professor.getMatricula()).toUri();

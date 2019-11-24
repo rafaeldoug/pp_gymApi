@@ -8,12 +8,12 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -27,13 +27,18 @@ import br.cesed.si.pp.controller.dto.AlunoDto;
 import br.cesed.si.pp.controller.dto.DetalhesDoAlunoDto;
 import br.cesed.si.pp.controller.form.AlunoForm;
 import br.cesed.si.pp.controller.form.AtualizaAlunoForm;
+import br.cesed.si.pp.controller.form.AtualizaTreinoAluno;
 import br.cesed.si.pp.model.Aluno;
 import br.cesed.si.pp.repository.AlunoRepository;
 import br.cesed.si.pp.repository.TreinoRepository;
+import br.cesed.si.pp.repository.UsuarioRepository;
 
 @RestController
 @RequestMapping("/alunos")
 public class AlunosController {
+	
+	private static final int INIT_PAGE = 0;
+	private static final int ITEMS_SIZE = 10;
 
 	@Autowired
 	private AlunoRepository alunoRepository;
@@ -41,9 +46,13 @@ public class AlunosController {
 	@Autowired
 	private TreinoRepository treinoRepository;
 	
+	@Autowired
+	private UsuarioRepository usuarioRepository;
+
 	@GetMapping
-	public Page<AlunoDto> lista(@RequestParam(required = false) String nome,
-			@PageableDefault(sort = "matricula", direction = Direction.ASC, page = 0, size = 10) Pageable paginacao) {
+	public Page<AlunoDto> lista(@RequestParam(required = false) String nome) {
+		
+		Pageable paginacao = PageRequest.of(INIT_PAGE, ITEMS_SIZE);
 
 		if (nome == null) {
 			Page<Aluno> alunos = alunoRepository.findAll(paginacao);
@@ -58,7 +67,7 @@ public class AlunosController {
 	@PostMapping
 	@Transactional
 	public ResponseEntity<AlunoDto> cadastrar(@RequestBody @Valid AlunoForm form, UriComponentsBuilder uriBuilder) {
-		Aluno aluno = form.converter(treinoRepository);
+		Aluno aluno = form.converter(treinoRepository, usuarioRepository);
 		alunoRepository.save(aluno);
 
 		URI uri = uriBuilder.path("/alunos/{id}").buildAndExpand(aluno.getMatricula()).toUri();
@@ -88,6 +97,19 @@ public class AlunosController {
 
 		return ResponseEntity.notFound().build();
 
+	}
+	
+	@PatchMapping("/{matricula}")
+	@Transactional
+	public ResponseEntity<AlunoDto> atualizarTreino(@PathVariable Long matricula, @RequestBody @Valid AtualizaTreinoAluno form) {
+		
+		Optional<Aluno> optional = alunoRepository.findById(matricula);
+		if(optional.isPresent()) {
+			Aluno aluno = form.atualizar(matricula, alunoRepository, treinoRepository);
+			return ResponseEntity.ok(new AlunoDto(aluno));
+		}
+		
+		return ResponseEntity.notFound().build();
 	}
 
 	@DeleteMapping("/{matricula}")

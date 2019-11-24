@@ -24,6 +24,9 @@ import br.cesed.si.pp.repository.TreinoRepository;
 @RestController
 @RequestMapping("/alunos-treinos")
 public class AlunosTreinosController {
+	
+	private static final int INIT_PAGE = 0;
+	private static final int ITEMS_SIZE = 10;
 
 	@Autowired
 	private AlunoRepository alunoRepository;
@@ -35,9 +38,9 @@ public class AlunosTreinosController {
 	private ProfessorRepository professorRepository;
 
 	@GetMapping
-	public Page<AlunoDto> lista(String nome, int pagina, int qtd) {
+	public Page<AlunoDto> lista(String nome) {
 		
-		Pageable paginacao = PageRequest.of(pagina, qtd);
+		Pageable paginacao = PageRequest.of(INIT_PAGE, ITEMS_SIZE);
 		Page<Aluno> alunos = alunoRepository.findAll(paginacao);
 		return AlunoDto.converter(alunos);
 	}

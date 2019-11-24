@@ -26,6 +26,14 @@ public class Usuario implements UserDetails {
 	@ManyToMany(fetch = FetchType.EAGER)
 	private List<Perfil> perfis = new ArrayList<>();
 
+	public Usuario() {
+	}
+
+	public Usuario(String nomeUsuario, String senha) {
+		this.nomeUsuario = nomeUsuario;
+		this.senha = senha;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

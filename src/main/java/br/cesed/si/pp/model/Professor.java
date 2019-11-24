@@ -3,19 +3,23 @@ package br.cesed.si.pp.model;
 import java.sql.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Professor extends Pessoa {
 
 	private Double salario;
-	
+	@OneToOne
+	private Usuario usuario;
+
 	public Professor() {
 		super();
 	}
 
-	public Professor(String nome, String endereco, Date dtNascimento, Double salario) {
+	public Professor(String nome, String endereco, Date dtNascimento, Double salario, Usuario usuario) {
 		super(nome, endereco, dtNascimento);
 		this.salario = salario;
+		this.usuario = usuario;
 	}
 
 	@Override
@@ -49,6 +53,14 @@ public class Professor extends Pessoa {
 
 	public void setSalario(Double salario) {
 		this.salario = salario;
+	}
+	
+	public Usuario getUsuario() {
+		return usuario;
+	}
+	
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
 
 }

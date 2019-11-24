@@ -1,11 +1,14 @@
 package br.cesed.si.pp.controller.form;
 
 import java.sql.Date;
+import java.util.Optional;
 
 import br.cesed.si.pp.model.Aluno;
 import br.cesed.si.pp.model.Treino;
+import br.cesed.si.pp.model.Usuario;
 import br.cesed.si.pp.model.enums.TipoAluno;
 import br.cesed.si.pp.repository.TreinoRepository;
+import br.cesed.si.pp.repository.UsuarioRepository;
 
 public class AlunoForm {
 
@@ -14,6 +17,8 @@ public class AlunoForm {
 	private Date dtNascimento;
 	private TipoAluno tipo;
 	private Long treinoId;
+	private String nomeUsuario;
+	private String senha;
 
 	public String getNome() {
 		return nome;
@@ -55,9 +60,36 @@ public class AlunoForm {
 		this.treinoId = treinoId;
 	}
 
-	public Aluno converter(TreinoRepository treinoRepository) {
-		Treino treino = treinoRepository.getOne(treinoId);
-		return new Aluno(nome, endereco, dtNascimento, tipo, treino);
+	public String getNomeUsuario() {
+		return nomeUsuario;
+	}
+
+	public void setNomeUsuario(String nomeUsuario) {
+		this.nomeUsuario = nomeUsuario;
+	}
+
+	public String getSenha() {
+		return senha;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
+
+	public Aluno converter(TreinoRepository treinoRepository, UsuarioRepository usuarioRepository) {
+		Optional<Treino> opt = treinoRepository.findById(treinoId);
+		Treino treino = new Treino();
+		if(opt.isPresent()) {
+			 treino = opt.get();
+		} else {
+			treino = null;
+		}
+		Usuario usuario = new Usuario(nomeUsuario, senha);
+		usuarioRepository.save(usuario);
+		Optional<Usuario> novoUsuario = usuarioRepository.findByNomeUsuario(nomeUsuario);
+
+		return new Aluno(nome, endereco, dtNascimento, tipo, treino, novoUsuario.get());
+
 	}
 
 }

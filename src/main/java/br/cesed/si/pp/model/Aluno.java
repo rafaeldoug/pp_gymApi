@@ -16,15 +16,18 @@ public class Aluno extends Pessoa {
 	private TipoAluno tipo = TipoAluno.PADRAO;
 	@OneToOne
 	private Treino treino;
+	@OneToOne
+	private Usuario usuario;
 
 	public Aluno() {
 		super();
 	}
 
-	public Aluno(String nome, String endereco, Date dtNascimento, TipoAluno tipo, Treino treino) {
+	public Aluno(String nome, String endereco, Date dtNascimento, TipoAluno tipo, Treino treino, Usuario usuario) {
 		super(nome, endereco, dtNascimento);
 		this.tipo = tipo;
 		this.treino = treino;
+		this.usuario = usuario;
 	}
 
 	@Override
@@ -70,5 +73,14 @@ public class Aluno extends Pessoa {
 	public void setTreino(Treino treino) {
 		this.treino = treino;
 	}
+	
+	public Usuario getUsuario() {
+		return usuario;
+	}
+	
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+	
 
 }

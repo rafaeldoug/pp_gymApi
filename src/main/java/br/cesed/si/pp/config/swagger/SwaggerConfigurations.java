@@ -1,19 +1,13 @@
 package br.cesed.si.pp.config.swagger;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.hateoas.client.JsonPathLinkDiscoverer;
-import org.springframework.hateoas.client.LinkDiscoverers;
-import org.springframework.hateoas.mediatype.hal.HalLinkDiscoverer;
 import org.springframework.hateoas.server.LinkRelationProvider;
 import org.springframework.hateoas.server.core.DelegatingLinkRelationProvider;
 import org.springframework.hateoas.server.core.EvoInflectorLinkRelationProvider;
-import org.springframework.plugin.core.SimplePluginRegistry;
 import org.springframework.plugin.core.support.PluginRegistryFactoryBean;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
@@ -33,12 +27,12 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 public class SwaggerConfigurations extends WebMvcConfigurationSupport {
 
-	@Bean
-	public LinkDiscoverers discoverers() {
-		List<JsonPathLinkDiscoverer> plugins = new ArrayList<>();
-		plugins.add(new HalLinkDiscoverer());
-		return new LinkDiscoverers(SimplePluginRegistry.create(plugins));
-	}
+//	@Bean
+//	public LinkDiscoverers discoverers() {
+//		List<JsonPathLinkDiscoverer> plugins = new ArrayList<>();
+//		plugins.add(new HalLinkDiscoverer());
+//		return new LinkDiscoverers(SimplePluginRegistry.create(plugins));
+//	}
 
 	@Bean
 	public LinkRelationProvider provider() {
@@ -62,11 +56,16 @@ public class SwaggerConfigurations extends WebMvcConfigurationSupport {
 	@Bean
 	public Docket gymApi() {
 		return new Docket(DocumentationType.SWAGGER_2).select()
-				.apis(RequestHandlerSelectors.basePackage("br.cesed.si.pp")).paths(PathSelectors.ant("/**")).build()
+				.apis(RequestHandlerSelectors.basePackage("br.cesed.si.pp"))
+				.paths(PathSelectors.ant("/**")).build()
 				.ignoredParameterTypes(Usuario.class)
 				.globalOperationParameters(
-						Arrays.asList(new ParameterBuilder().name("Authorization").description("Header para Token JWT")
-								.modelRef(new ModelRef("string")).parameterType("header").required(false).build()))
+						Arrays.asList(new ParameterBuilder()
+								.name("Authorization")
+								.description("Header para Token JWT")
+								.modelRef(new ModelRef("string"))
+								.parameterType("header")
+								.required(false).build()))
 				.apiInfo(metaData());
 	}
 
