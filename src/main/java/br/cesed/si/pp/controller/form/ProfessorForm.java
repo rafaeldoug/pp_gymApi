@@ -2,7 +2,10 @@ package br.cesed.si.pp.controller.form;
 
 import java.sql.Date;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import br.cesed.si.pp.model.Professor;
+import br.cesed.si.pp.model.enums.RoleUsuario;
 
 public class ProfessorForm {
 
@@ -63,7 +66,17 @@ public class ProfessorForm {
 
 	public Professor converter() {
 
-		return new Professor(nome, endereco, dtNascimento, salario, senha, email);
+		Professor professor = new Professor();
+		professor.setNome(nome);
+		professor.setEndereco(endereco);
+		professor.setDtNascimento(dtNascimento);
+		professor.setSalario(salario);
+		String novaSenha = new BCryptPasswordEncoder().encode(senha);
+		professor.setSenha(novaSenha);
+		professor.setEmail(email);
+		professor.addTipo(RoleUsuario.PROFESSOR);
+		
+		return professor;
 	}
 
 }

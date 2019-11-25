@@ -13,7 +13,7 @@ public class DetalhesDoAlunoDto {
 	private String tipo;
 
 	public DetalhesDoAlunoDto(Aluno aluno) {
-		this.matricula = aluno.getMatricula();
+		this.matricula = aluno.getId();
 		this.nome = aluno.getNome();
 		this.endereco = aluno.getEndereco();
 		this.dtNascimento = aluno.getDtNascimento();

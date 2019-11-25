@@ -16,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.cesed.si.pp.controller.dto.DadosUsuarioDto;
+import br.cesed.si.pp.controller.dto.LoginForm;
 
 public class AutenticacaoViaTokenFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -33,7 +33,7 @@ public class AutenticacaoViaTokenFilter extends UsernamePasswordAuthenticationFi
 	public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
 			throws AuthenticationException {
 		try {
-			DadosUsuarioDto creds = new ObjectMapper().readValue(req.getInputStream(), DadosUsuarioDto.class);
+			LoginForm creds = new ObjectMapper().readValue(req.getInputStream(), LoginForm.class);
 
 			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(creds.getEmail(),
 					creds.getPassword(), new ArrayList<>());
@@ -50,8 +50,9 @@ public class AutenticacaoViaTokenFilter extends UsernamePasswordAuthenticationFi
 	protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
 			Authentication auth) throws IOException, ServletException {
 
-		String username = ((UsernamePasswordAuthenticationToken) auth.getPrincipal()).getName();
-		String token = tokenService.gerarToken(username);
+		
+//		String username = ((UsernamePasswordAuthenticationToken) auth.getPrincipal()).getName();
+		String token = tokenService.gerarToken(auth);
 		res.addHeader("Authorization", "Bearer " + token);
 
 	}

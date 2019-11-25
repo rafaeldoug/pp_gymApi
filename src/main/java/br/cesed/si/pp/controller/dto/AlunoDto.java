@@ -11,7 +11,7 @@ public class AlunoDto {
 	private String tipo;
 
 	public AlunoDto(Aluno aluno) {
-		this.matricula = aluno.getMatricula();
+		this.matricula = aluno.getId();
 		this.nome = aluno.getNome();
 		this.tipo = aluno.getTipoAluno().name();
 	}

@@ -67,10 +67,10 @@ public class AlunosController {
 	@Transactional
 	public ResponseEntity<AlunoDto> cadastrar(@RequestBody AlunoForm form, UriComponentsBuilder uriBuilder) {
 		Aluno aluno = form.converter(treinoRepository);
-		aluno.addTipo(RoleUsuario.PADRAO);
+//		aluno.addTipo(RoleUsuario.PADRAO);
 		alunoRepository.save(aluno);
 
-		URI uri = uriBuilder.path("/alunos/{id}").buildAndExpand(aluno.getMatricula()).toUri();
+		URI uri = uriBuilder.path("/alunos/{id}").buildAndExpand(aluno.getId()).toUri();
 		return ResponseEntity.created(uri).body(new AlunoDto(aluno));
 	}
 

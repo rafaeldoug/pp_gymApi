@@ -2,18 +2,17 @@ package br.cesed.si.pp.controller.dto;
 
 import java.io.Serializable;
 
-public class DadosUsuarioDto implements Serializable {
+public class LoginForm implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private String email;
-
 	private String password;
 
-	public DadosUsuarioDto() {
+	public LoginForm() {
 	}
 
-	public DadosUsuarioDto(String email, String senha) {
+	public LoginForm(String email, String senha) {
 		this.email = email;
 		this.password = senha;
 	}

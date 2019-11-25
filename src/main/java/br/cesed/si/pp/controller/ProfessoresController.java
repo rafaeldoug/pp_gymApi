@@ -53,10 +53,10 @@ public class ProfessoresController {
 	public ResponseEntity<ProfessorDto> cadastrar(@RequestBody ProfessorForm form,
 			UriComponentsBuilder uriBuilder) {
 		Professor professor = form.converter();
-		professor.addTipo(RoleUsuario.PROFESSOR);
+//		professor.addTipo(RoleUsuario.PROFESSOR);
 		professorRepository.save(professor);
 
-		URI uri = uriBuilder.path("/professores/{matricula}").buildAndExpand(professor.getMatricula()).toUri();
+		URI uri = uriBuilder.path("/professores/{matricula}").buildAndExpand(professor.getId()).toUri();
 		return ResponseEntity.created(uri).body(new ProfessorDto(professor));
 
 	}

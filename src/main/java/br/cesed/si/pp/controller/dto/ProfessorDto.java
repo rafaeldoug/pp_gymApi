@@ -12,7 +12,7 @@ public class ProfessorDto {
 	private String endereco;
 
 	public ProfessorDto(Professor professor) {
-		this.matricula = professor.getMatricula();
+		this.matricula = professor.getId();
 		this.nome = professor.getNome();
 		this.endereco = professor.getEndereco();
 	}

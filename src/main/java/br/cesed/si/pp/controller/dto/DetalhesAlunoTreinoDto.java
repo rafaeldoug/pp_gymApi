@@ -20,7 +20,7 @@ public class DetalhesAlunoTreinoDto {
 	private List<ExercicioDto> exercicios;
 
 	public DetalhesAlunoTreinoDto(Aluno aluno, Treino treino, Professor professor) {
-		this.matricula = aluno.getMatricula();
+		this.matricula = aluno.getId();
 		this.nomeAluno = aluno.getNome();
 		this.treinoId = treino.getId();
 		this.descricaoTreino = treino.getDescricao();

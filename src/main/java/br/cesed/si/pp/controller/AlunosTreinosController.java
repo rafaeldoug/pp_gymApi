@@ -49,7 +49,7 @@ public class AlunosTreinosController {
 	public ResponseEntity<DetalhesAlunoTreinoDto> detalhar(@PathVariable Long matricula) {
 		Optional<Aluno> aluno = alunoRepository.findById(matricula);
 		Optional<Treino> treino = treinoRepository.findById(aluno.get().getTreino().getId());
-		Optional<Professor> professor = professorRepository.findById(treino.get().getProfessor().getMatricula());
+		Optional<Professor> professor = professorRepository.findById(treino.get().getProfessor().getId());
 		if (aluno.isPresent() && treino.isPresent() && professor.isPresent()) {
 			return ResponseEntity.ok(new DetalhesAlunoTreinoDto(aluno.get(), treino.get(), professor.get()));
 		}

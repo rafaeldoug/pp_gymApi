@@ -13,7 +13,7 @@ public class DetalhesDoProfessorDto {
 	private Double salario;
 
 	public DetalhesDoProfessorDto(Professor professor) {
-		this.matricula = professor.getMatricula();
+		this.matricula = professor.getId();
 		this.nome = professor.getNome();
 		this.endereco = professor.getEndereco();
 		this.dtNascimento = professor.getDtNascimento();

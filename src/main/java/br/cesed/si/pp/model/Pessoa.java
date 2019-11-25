@@ -20,40 +20,27 @@ public class Pessoa {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long matricula;
+	private Long id;
 	private String nome;
 	private String endereco;
 	private Date dtNascimento;
 	private String email;
 	private String senha;
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name = "perfil_pessoa")
-	private Set<Integer> tipoUsuario = new HashSet<Integer>();
 
 	public Pessoa() {
 	}
 
-	public Pessoa(String nome, String endereco, Date dtNascimento, String email, String senha,
-			Set<Integer> tipoUsuario) {
+	public Pessoa(String nome, String endereco, Date dtNascimento, String email, String senha) {
 		super();
 		this.nome = nome;
 		this.endereco = endereco;
 		this.dtNascimento = dtNascimento;
 		this.email = email;
 		this.senha = senha;
-		this.tipoUsuario = tipoUsuario;
 	}
 
-	public Set<RoleUsuario> getTipo() {
-		return tipoUsuario.stream().map(x -> RoleUsuario.toEnum(x)).collect(Collectors.toSet());
-	}
-
-	public void addTipo(RoleUsuario tipo) {
-		this.tipoUsuario.add(tipo.getCod());
-	}
-
-	public Long getMatricula() {
-		return matricula;
+	public Long getId() {
+		return id;
 	}
 
 	public String getNome() {
@@ -76,16 +63,8 @@ public class Pessoa {
 		return senha;
 	}
 
-	public Set<Integer> getTipoUsuario() {
-		return tipoUsuario;
-	}
-
-	public void setTipoUsuario(Set<Integer> tipoUsuario) {
-		this.tipoUsuario = tipoUsuario;
-	}
-
-	public void setMatricula(Long matricula) {
-		this.matricula = matricula;
+	public void setId(Long matricula) {
+		this.id = matricula;
 	}
 
 	public void setNome(String nome) {

@@ -3,8 +3,10 @@ package br.cesed.si.pp.config.security;
 import java.sql.Date;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import br.cesed.si.pp.model.Pessoa;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -18,11 +20,12 @@ public class TokenService {
 	@Value("${pp.gym.jwt.secret}")
 	private String secret;
 
-	public String gerarToken(String username) {
+	public String gerarToken(Authentication auth) {
 
+		Pessoa logado = (Pessoa) auth.getPrincipal();
 		return Jwts.builder()
 				.setIssuer("API do Sistema de Academia - PP")
-				.setSubject(username)
+				.setSubject(logado.getId().toString())
 				.setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(expiration)))
 				.signWith(SignatureAlgorithm.HS256, secret.getBytes())
 				.compact();

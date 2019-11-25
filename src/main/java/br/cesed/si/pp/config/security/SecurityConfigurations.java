@@ -54,10 +54,14 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 				.and().csrf().disable().authorizeRequests()
 				.antMatchers("/").permitAll()
 				.antMatchers(HttpMethod.GET, "/exercicios").permitAll()
+				.antMatchers(HttpMethod.GET, "/professores").permitAll()
+//				.antMatchers(HttpMethod.POST, "/alunos").permitAll()
+				.antMatchers(HttpMethod.POST, "/auth").permitAll()
 				.antMatchers(HttpMethod.POST, "/professores").permitAll()
 				.anyRequest().authenticated()
-				.and().addFilter(new AutenticacaoViaTokenFilter(authenticationManager(), tokenService))
+				.and()
 				.addFilter(new AutorizacaoViaTokenFilter(authenticationManager(), tokenService, userDetailsService))
+				.addFilter(new AutenticacaoViaTokenFilter(authenticationManager(), tokenService))
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
 
