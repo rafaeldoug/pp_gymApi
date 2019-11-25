@@ -3,21 +3,12 @@ package br.cesed.si.pp.controller.form;
 import java.sql.Date;
 import java.util.List;
 
-import javax.validation.constraints.NotEmpty;
-
-import org.hibernate.validator.constraints.Length;
-
-import com.sun.istack.NotNull;
-
 import br.cesed.si.pp.model.Professor;
 import br.cesed.si.pp.model.Treino;
 import br.cesed.si.pp.repository.ProfessorRepository;
 
 public class TreinoForm {
 
-	@NotNull
-	@NotEmpty
-	@Length(min = 1)
 	private String nomeProfessor;
 	private Date dtIni;
 	private String descricao;

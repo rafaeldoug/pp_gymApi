@@ -2,9 +2,6 @@ package br.cesed.si.pp.controller.form;
 
 import java.sql.Date;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
 import br.cesed.si.pp.model.Aluno;
 import br.cesed.si.pp.model.Treino;
 import br.cesed.si.pp.model.enums.TipoAluno;
@@ -13,14 +10,10 @@ import br.cesed.si.pp.repository.TreinoRepository;
 
 public class AtualizaAlunoForm {
 
-	@NotNull
-	@NotEmpty
 	private String nome;
 	private String endereco;
-	@NotNull
-	@NotEmpty
 	private Date dtNascimento;
-	private TipoAluno tipo;
+	private TipoAluno tipoAluno;
 	private Long treinoId;
 
 	public String getNome() {
@@ -48,11 +41,11 @@ public class AtualizaAlunoForm {
 	}
 
 	public TipoAluno getTipo() {
-		return tipo;
+		return tipoAluno;
 	}
 
-	public void setTipo(TipoAluno tipo) {
-		this.tipo = tipo;
+	public void setTipo(TipoAluno tipoAluno) {
+		this.tipoAluno = tipoAluno;
 	}
 
 	public Long getTreinoId() {
@@ -69,7 +62,7 @@ public class AtualizaAlunoForm {
 		aluno.setNome(this.nome);
 		aluno.setEndereco(this.endereco);
 		aluno.setDtNascimento(this.dtNascimento);
-		aluno.setTipo(this.tipo);
+		aluno.setTipoAluno(this.tipoAluno);
 		Treino treino = treinoRepository.getOne(treinoId);
 		aluno.setTreino(treino);
 

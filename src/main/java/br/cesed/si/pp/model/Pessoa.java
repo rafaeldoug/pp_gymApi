@@ -1,11 +1,19 @@
 package br.cesed.si.pp.model;
 
 import java.sql.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+
+import br.cesed.si.pp.model.enums.RoleUsuario;
 
 @MappedSuperclass
 public class Pessoa {
@@ -16,86 +24,88 @@ public class Pessoa {
 	private String nome;
 	private String endereco;
 	private Date dtNascimento;
-	
+	private String email;
+	private String senha;
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "perfil_pessoa")
+	private Set<Integer> tipoUsuario = new HashSet<Integer>();
+
 	public Pessoa() {
-		
 	}
 
-	public Pessoa(String nome, String endereco, Date dtNascimento) {
+	public Pessoa(String nome, String endereco, Date dtNascimento, String email, String senha,
+			Set<Integer> tipoUsuario) {
+		super();
 		this.nome = nome;
 		this.endereco = endereco;
 		this.dtNascimento = dtNascimento;
+		this.email = email;
+		this.senha = senha;
+		this.tipoUsuario = tipoUsuario;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((dtNascimento == null) ? 0 : dtNascimento.hashCode());
-		result = prime * result + ((endereco == null) ? 0 : endereco.hashCode());
-		result = prime * result + ((matricula == null) ? 0 : matricula.hashCode());
-		result = prime * result + ((nome == null) ? 0 : nome.hashCode());
-		return result;
+	public Set<RoleUsuario> getTipo() {
+		return tipoUsuario.stream().map(x -> RoleUsuario.toEnum(x)).collect(Collectors.toSet());
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Pessoa other = (Pessoa) obj;
-		if (dtNascimento == null) {
-			if (other.dtNascimento != null)
-				return false;
-		} else if (!dtNascimento.equals(other.dtNascimento))
-			return false;
-		if (endereco == null) {
-			if (other.endereco != null)
-				return false;
-		} else if (!endereco.equals(other.endereco))
-			return false;
-		if (matricula == null) {
-			if (other.matricula != null)
-				return false;
-		} else if (!matricula.equals(other.matricula))
-			return false;
-		if (nome == null) {
-			if (other.nome != null)
-				return false;
-		} else if (!nome.equals(other.nome))
-			return false;
-		return true;
+	public void addTipo(RoleUsuario tipo) {
+		this.tipoUsuario.add(tipo.getCod());
+	}
+
+	public Long getMatricula() {
+		return matricula;
 	}
 
 	public String getNome() {
 		return nome;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-
 	public String getEndereco() {
 		return endereco;
-	}
-
-	public void setEndereco(String endereco) {
-		this.endereco = endereco;
 	}
 
 	public Date getDtNascimento() {
 		return dtNascimento;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public String getSenha() {
+		return senha;
+	}
+
+	public Set<Integer> getTipoUsuario() {
+		return tipoUsuario;
+	}
+
+	public void setTipoUsuario(Set<Integer> tipoUsuario) {
+		this.tipoUsuario = tipoUsuario;
+	}
+
+	public void setMatricula(Long matricula) {
+		this.matricula = matricula;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+	public void setEndereco(String endereco) {
+		this.endereco = endereco;
+	}
+
 	public void setDtNascimento(Date dtNascimento) {
 		this.dtNascimento = dtNascimento;
 	}
 
-	public Long getMatricula() {
-		return matricula;
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
 	}
 
 }

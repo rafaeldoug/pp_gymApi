@@ -13,7 +13,7 @@ public class AlunoDto {
 	public AlunoDto(Aluno aluno) {
 		this.matricula = aluno.getMatricula();
 		this.nome = aluno.getNome();
-		this.tipo = aluno.getTipo().name();
+		this.tipo = aluno.getTipoAluno().name();
 	}
 
 	public Long getMatricula() {

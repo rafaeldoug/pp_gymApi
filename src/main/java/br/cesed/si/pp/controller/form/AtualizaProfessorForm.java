@@ -1,14 +1,10 @@
 package br.cesed.si.pp.controller.form;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
 import br.cesed.si.pp.model.Professor;
 import br.cesed.si.pp.repository.ProfessorRepository;
 
 public class AtualizaProfessorForm {
 
-	@NotNull @NotEmpty
 	private String nome;
 	private String endereco;
 

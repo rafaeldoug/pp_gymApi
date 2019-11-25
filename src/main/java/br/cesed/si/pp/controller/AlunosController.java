@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -29,9 +30,9 @@ import br.cesed.si.pp.controller.form.AlunoForm;
 import br.cesed.si.pp.controller.form.AtualizaAlunoForm;
 import br.cesed.si.pp.controller.form.AtualizaTreinoAluno;
 import br.cesed.si.pp.model.Aluno;
+import br.cesed.si.pp.model.enums.RoleUsuario;
 import br.cesed.si.pp.repository.AlunoRepository;
 import br.cesed.si.pp.repository.TreinoRepository;
-import br.cesed.si.pp.repository.UsuarioRepository;
 
 @RestController
 @RequestMapping("/alunos")
@@ -46,9 +47,6 @@ public class AlunosController {
 	@Autowired
 	private TreinoRepository treinoRepository;
 	
-	@Autowired
-	private UsuarioRepository usuarioRepository;
-
 	@GetMapping
 	public Page<AlunoDto> lista(@RequestParam(required = false) String nome) {
 		
@@ -64,10 +62,12 @@ public class AlunosController {
 
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@PostMapping
 	@Transactional
-	public ResponseEntity<AlunoDto> cadastrar(@RequestBody @Valid AlunoForm form, UriComponentsBuilder uriBuilder) {
-		Aluno aluno = form.converter(treinoRepository, usuarioRepository);
+	public ResponseEntity<AlunoDto> cadastrar(@RequestBody AlunoForm form, UriComponentsBuilder uriBuilder) {
+		Aluno aluno = form.converter(treinoRepository);
+		aluno.addTipo(RoleUsuario.PADRAO);
 		alunoRepository.save(aluno);
 
 		URI uri = uriBuilder.path("/alunos/{id}").buildAndExpand(aluno.getMatricula()).toUri();

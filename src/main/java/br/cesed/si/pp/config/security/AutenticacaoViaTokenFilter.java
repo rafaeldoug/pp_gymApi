@@ -1,56 +1,59 @@
 package br.cesed.si.pp.config.security;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import br.cesed.si.pp.model.Usuario;
-import br.cesed.si.pp.repository.UsuarioRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class AutenticacaoViaTokenFilter extends OncePerRequestFilter {
+import br.cesed.si.pp.controller.dto.DadosUsuarioDto;
+
+public class AutenticacaoViaTokenFilter extends UsernamePasswordAuthenticationFilter {
+
+	private AuthenticationManager authManager;
 
 	private TokenService tokenService;
-	private UsuarioRepository usuarioRepository;
 
-	public AutenticacaoViaTokenFilter(TokenService tokenService, UsuarioRepository usuarioRepository) {
+	public AutenticacaoViaTokenFilter(AuthenticationManager auth, TokenService tokenService) {
+		this.authManager = auth;
 		this.tokenService = tokenService;
-		this.usuarioRepository = usuarioRepository;
+	}
+	
+	@Override
+	public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
+			throws AuthenticationException {
+		try {
+			DadosUsuarioDto creds = new ObjectMapper().readValue(req.getInputStream(), DadosUsuarioDto.class);
+
+			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(creds.getEmail(),
+					creds.getPassword(), new ArrayList<>());
+			Authentication auth = authManager.authenticate(authToken);
+			return auth;
+			
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
+	protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
+			Authentication auth) throws IOException, ServletException {
 
-		String token = recuperarToken(request);
-		boolean valido = tokenService.isTokenValid(token);
-		if (valido) {
-			autenticarCliente(token);
-		}
+		String username = ((UsernamePasswordAuthenticationToken) auth.getPrincipal()).getName();
+		String token = tokenService.gerarToken(username);
+		res.addHeader("Authorization", "Bearer " + token);
 
-		filterChain.doFilter(request, response);
 	}
-
-	private void autenticarCliente(String token) {
-		Long idUsuario = tokenService.getIdUsuario(token);
-		Usuario usuario = usuarioRepository.findById(idUsuario).get();
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(usuario, null,
-				usuario.getAuthorities());
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-	}
-
-	private String recuperarToken(HttpServletRequest request) {
-		String token = request.getHeader("Authorization");
-		if (token == null || token.isEmpty() || !token.startsWith("Bearer ")) {
-			return null;
-		}
-		return token.substring(7, token.length());
-	}
-
+	
 }

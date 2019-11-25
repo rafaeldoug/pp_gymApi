@@ -12,7 +12,6 @@ import org.springframework.plugin.core.support.PluginRegistryFactoryBean;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
-import br.cesed.si.pp.model.Usuario;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -58,7 +57,7 @@ public class SwaggerConfigurations extends WebMvcConfigurationSupport {
 		return new Docket(DocumentationType.SWAGGER_2).select()
 				.apis(RequestHandlerSelectors.basePackage("br.cesed.si.pp"))
 				.paths(PathSelectors.ant("/**")).build()
-				.ignoredParameterTypes(Usuario.class)
+//				.ignoredParameterTypes(Usuario.class)
 				.globalOperationParameters(
 						Arrays.asList(new ParameterBuilder()
 								.name("Authorization")

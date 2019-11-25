@@ -12,30 +12,27 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import br.cesed.si.pp.repository.UsuarioRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@EnableTransactionManagement
 public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
-
-	@Autowired
-	private AutenticacaoService autenticacaoService;
 
 	@Autowired
 	private TokenService tokenService;
 
 	@Autowired
-	private UsuarioRepository usuarioRepository;
+	private UserDetailsService userDetailsService;
 
-	@Autowired
-	private AuthenticationEntryPoint authenticationEntryPoint;
+	@Bean
+	public UserDetailsService userDetailsService() {
+		return super.userDetailsService();
+	}
 
 	@Override
 	@Bean
@@ -46,24 +43,23 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	// configurar autenticacao
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(autenticacaoService).passwordEncoder(new BCryptPasswordEncoder());
+		auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
+
 	}
 
-//	// configurar autorizacao
-//	@Override
-//	protected void configure(HttpSecurity http) throws Exception {
-//		http.csrf().disable().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
-//
-//				.().antMatchers(HttpMethod.GET, "/**").permitAll().antMatchers(HttpMethod.POST, "/**")
-//				.permitAll().antMatchers(HttpMethod.PUT, "/**").permitAll().antMatchers(HttpMethod.DELETE, "/**")
-//				.permitAll().antMatchers(HttpMethod.PATCH, "/**").permitAll()
-////		.antMatchers(HttpMethod.POST, "/alunos").permitAll()
-////		.antMatchers(HttpMethod.POST, "/treinos").permitAll()
-//				.anyRequest().authenticated().and().sessionManagement()
-//				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-//				.addFilterBefore(new AutenticacaoViaTokenFilter(tokenService, usuarioRepository),
-//						UsernamePasswordAuthenticationFilter.class);
-//	}
+	// configurar autorizacao
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.cors().configurationSource(configurationSource())
+				.and().csrf().disable().authorizeRequests()
+				.antMatchers("/").permitAll()
+				.antMatchers(HttpMethod.GET, "/exercicios").permitAll()
+				.antMatchers(HttpMethod.POST, "/professores").permitAll()
+				.anyRequest().authenticated()
+				.and().addFilter(new AutenticacaoViaTokenFilter(authenticationManager(), tokenService))
+				.addFilter(new AutorizacaoViaTokenFilter(authenticationManager(), tokenService, userDetailsService))
+				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+	}
 
 //	// configurar autorizacao
 //	@Override
@@ -89,6 +85,19 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 				"/swagger-resources/**");
 	}
 
+	@Bean
+	CorsConfigurationSource configurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowCredentials(true);
+		configuration.addAllowedHeader("*");
+		configuration.addAllowedOrigin("*");
+		configuration.addAllowedMethod("*");
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
 
-
+//	public static void main(String[] args) {
+//		System.out.println(new BCryptPasswordEncoder().encode("passtest"));
+//	}
 }

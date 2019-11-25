@@ -17,7 +17,7 @@ public class DetalhesDoAlunoDto {
 		this.nome = aluno.getNome();
 		this.endereco = aluno.getEndereco();
 		this.dtNascimento = aluno.getDtNascimento();
-		this.tipo = aluno.getTipo().name();
+		this.tipo = aluno.getTipoAluno().name();
 	}
 
 	public Long getMatricula() {

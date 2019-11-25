@@ -1,66 +1,36 @@
 package br.cesed.si.pp.model;
 
 import java.sql.Date;
+import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Entity
+@Data
+@AllArgsConstructor
 public class Professor extends Pessoa {
 
 	private Double salario;
-	@OneToOne
-	private Usuario usuario;
 
 	public Professor() {
-		super();
 	}
 
-	public Professor(String nome, String endereco, Date dtNascimento, Double salario, Usuario usuario) {
-		super(nome, endereco, dtNascimento);
+	public Professor(String nome, String endereco, Date dtNascimento, String email, String senha,
+			Set<Integer> tipoUsuario, Double salario) {
+		super(nome, endereco, dtNascimento, email, senha, tipoUsuario);
 		this.salario = salario;
-		this.usuario = usuario;
 	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((salario == null) ? 0 : salario.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Professor other = (Professor) obj;
-		if (salario == null) {
-			if (other.salario != null)
-				return false;
-		} else if (!salario.equals(other.salario))
-			return false;
-		return true;
+	
+	
+	public Professor(String nome, String endereco, Date dtNascimento, Double salario2, String senha,
+			String email) {
 	}
 
 	public Double getSalario() {
 		return salario;
-	}
-
-	public void setSalario(Double salario) {
-		this.salario = salario;
-	}
-	
-	public Usuario getUsuario() {
-		return usuario;
-	}
-	
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
 	}
 
 }

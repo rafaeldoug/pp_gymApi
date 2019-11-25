@@ -9,6 +9,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,8 +25,8 @@ import br.cesed.si.pp.controller.dto.ProfessorDto;
 import br.cesed.si.pp.controller.form.AtualizaProfessorForm;
 import br.cesed.si.pp.controller.form.ProfessorForm;
 import br.cesed.si.pp.model.Professor;
+import br.cesed.si.pp.model.enums.RoleUsuario;
 import br.cesed.si.pp.repository.ProfessorRepository;
-import br.cesed.si.pp.repository.UsuarioRepository;
 
 @RestController
 @RequestMapping("/professores")
@@ -34,9 +35,6 @@ public class ProfessoresController {
 	@Autowired
 	ProfessorRepository professorRepository;
 	
-	@Autowired
-	UsuarioRepository usuarioRepository;
-
 	@GetMapping
 	public List<ProfessorDto> lista(String nome) {
 		if (nome == null) {
@@ -52,9 +50,10 @@ public class ProfessoresController {
 
 	@PostMapping
 	@Transactional
-	public ResponseEntity<ProfessorDto> cadastrar(@RequestBody @Valid ProfessorForm form,
+	public ResponseEntity<ProfessorDto> cadastrar(@RequestBody ProfessorForm form,
 			UriComponentsBuilder uriBuilder) {
-		Professor professor = form.converter(usuarioRepository);
+		Professor professor = form.converter();
+		professor.addTipo(RoleUsuario.PROFESSOR);
 		professorRepository.save(professor);
 
 		URI uri = uriBuilder.path("/professores/{matricula}").buildAndExpand(professor.getMatricula()).toUri();
@@ -72,6 +71,7 @@ public class ProfessoresController {
 		return ResponseEntity.notFound().build();
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@PutMapping("/{matricula}")
 	@Transactional
 	public ResponseEntity<ProfessorDto> atualizar(@PathVariable Long matricula,
@@ -87,6 +87,7 @@ public class ProfessoresController {
 
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@DeleteMapping("/{matricula}")
 	@Transactional
 	public ResponseEntity<?> remover(@PathVariable Long matricula) {

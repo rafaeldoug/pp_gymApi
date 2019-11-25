@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,6 +38,7 @@ public class ExerciciosController {
 		return ExercicioDto.conveter(exercicios);
 	}
 
+	@PreAuthorize("hasRole('ROLE_PROFESSOR')")
 	@PostMapping
 	@Transactional
 	public ResponseEntity<ExercicioDto> cadastrar(ExercicioForm form, UriComponentsBuilder uriBuilder) {
@@ -48,9 +49,10 @@ public class ExerciciosController {
 		return ResponseEntity.created(uri).body(new ExercicioDto(exercicio));
 	}
 	
+	@PreAuthorize("hasRole('ROLE_PROFESSOR')")
 	@PutMapping("/{id}")
 	@Transactional
-	public ResponseEntity<ExercicioDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizaExercicioForm form) {
+	public ResponseEntity<ExercicioDto> atualizar(@PathVariable Long id, @RequestBody AtualizaExercicioForm form) {
 		
 		Optional<Exercicio> optional = exercicioRepository.findById(id);
 		if(optional.isPresent()) {
@@ -62,6 +64,7 @@ public class ExerciciosController {
 		return ResponseEntity.notFound().build();
 	}
 
+	@PreAuthorize("hasRole('ROLE_PROFESSOR')")
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<?> remover(Long id) {
