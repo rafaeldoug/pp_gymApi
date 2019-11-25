@@ -46,7 +46,7 @@ public class AlunosController {
 	@Autowired
 	private TreinoRepository treinoRepository;
 
-	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_PROFESSOR')")
+//	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_PROFESSOR')")
 	@GetMapping
 	public Page<AlunoDto> lista(@RequestParam(required = false) String nome) {
 
@@ -62,7 +62,7 @@ public class AlunosController {
 
 	}
 
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@PostMapping
 	@Transactional
 	public ResponseEntity<AlunoDto> cadastrar(@RequestBody AlunoForm form, UriComponentsBuilder uriBuilder) {
@@ -74,6 +74,7 @@ public class AlunosController {
 		return ResponseEntity.created(uri).body(new AlunoDto(aluno));
 	}
 
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@GetMapping("/{matricula}")
 	public ResponseEntity<DetalhesDoAlunoDto> detalhar(@PathVariable Long matricula) {
 		Optional<Aluno> aluno = alunoRepository.findById(matricula);
@@ -84,6 +85,7 @@ public class AlunosController {
 		return ResponseEntity.notFound().build();
 	}
 
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@PutMapping("/{matricula}")
 	@Transactional
 	public ResponseEntity<AlunoDto> atualizar(@PathVariable Long matricula,
@@ -99,6 +101,7 @@ public class AlunosController {
 
 	}
 
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@PatchMapping("/{matricula}")
 	@Transactional
 	public ResponseEntity<AlunoDto> atualizarTreino(@PathVariable Long matricula,
@@ -113,6 +116,7 @@ public class AlunosController {
 		return ResponseEntity.notFound().build();
 	}
 
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@DeleteMapping("/{matricula}")
 	@Transactional
 	public ResponseEntity<?> remover(@PathVariable Long matricula) {

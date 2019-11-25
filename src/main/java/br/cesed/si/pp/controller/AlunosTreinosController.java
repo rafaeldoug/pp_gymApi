@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +25,7 @@ import br.cesed.si.pp.repository.TreinoRepository;
 @RestController
 @RequestMapping("/alunos-treinos")
 public class AlunosTreinosController {
-	
+
 	private static final int INIT_PAGE = 0;
 	private static final int ITEMS_SIZE = 10;
 
@@ -37,14 +38,16 @@ public class AlunosTreinosController {
 	@Autowired
 	private ProfessorRepository professorRepository;
 
+	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('PADRAO')")
 	@GetMapping
 	public Page<AlunoDto> lista(String nome) {
-		
+
 		Pageable paginacao = PageRequest.of(INIT_PAGE, ITEMS_SIZE);
 		Page<Aluno> alunos = alunoRepository.findAll(paginacao);
 		return AlunoDto.converter(alunos);
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('PADRAO')")
 	@GetMapping("/{matricula}")
 	public ResponseEntity<DetalhesAlunoTreinoDto> detalhar(@PathVariable Long matricula) {
 		Optional<Aluno> aluno = alunoRepository.findById(matricula);

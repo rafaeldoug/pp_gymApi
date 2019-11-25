@@ -3,17 +3,17 @@ package br.cesed.si.pp.config.security;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
-@Service
+@Component
 public class TokenService {
 
 	@Value("${pp.gym.jwt.expiration}")
-	private String expiration;
+	private Long expiration;
 
 	@Value("${pp.gym.jwt.secret}")
 	private String secret;
@@ -23,7 +23,7 @@ public class TokenService {
 		return Jwts.builder()
 				.setIssuer("API do Sistema de Academia - PP")
 				.setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(expiration)))
+				.setExpiration(new Date(System.currentTimeMillis() + expiration))
 				.signWith(SignatureAlgorithm.HS256, secret.getBytes())
 				.compact();
 	}

@@ -14,9 +14,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import br.cesed.si.pp.model.enums.RoleUsuario;
 
 @Configuration
 @EnableWebSecurity
@@ -29,11 +32,14 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private UserDetailsService userDetailsService;
 	
-	public static final String[] PUBLIC_MATCHERS = {
-			"/exercicios",
-			"/swagger-ui.html#/",
-			"/login",
-		};
+	@Autowired
+	private AuthEntryPointFilter entryPoint;
+	
+//	public static final String[] PUBLIC_MATCHERS = {
+//			"/exercicios",
+//			"/swagger-ui.html#/",
+//			"/login",
+//		};
 
 	@Bean
 	public UserDetailsService userDetailsService() {
@@ -57,13 +63,18 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.cors().configurationSource(configurationSource())
-				.and().csrf().disable().authorizeRequests()
+				.and().csrf().disable()
+				.authorizeRequests()
 				.antMatchers("/").permitAll()
-				.antMatchers("/login").permitAll()
+//				.antMatchers("/login").permitAll()
+				.antMatchers(HttpMethod.GET, "/alunos/**").hasAnyAuthority(RoleUsuario.ADMIN.getDescricao())
+				.antMatchers(HttpMethod.GET, "/exercicios").permitAll()
 				.antMatchers(HttpMethod.POST, "/auth").permitAll()
 				.antMatchers(HttpMethod.POST, "/professores").permitAll()
 				.anyRequest().authenticated()
 				.and()
+				.exceptionHandling().authenticationEntryPoint(entryPoint).and()
+				.addFilterBefore(new AutenticacaoViaTokenFilter(authenticationManager(), tokenService), UsernamePasswordAuthenticationFilter.class)
 				.addFilter(new AutorizacaoViaTokenFilter(authenticationManager(), tokenService, userDetailsService))
 				.addFilter(new AutenticacaoViaTokenFilter(authenticationManager(), tokenService))
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -92,6 +103,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 		return source;
 	}
 
+//	 gerador de senha encodada
 //	public static void main(String[] args) {
 //		System.out.println(new BCryptPasswordEncoder().encode("admin"));
 //	}

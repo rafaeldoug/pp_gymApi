@@ -14,12 +14,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+import io.jsonwebtoken.Claims;
+
 public class AutorizacaoViaTokenFilter extends BasicAuthenticationFilter {
 
 	private TokenService tokenService;
 
 	private UserDetailsService userDetailsService;
-
+	
+	private AutenticacaoDetalhesService authService;
+	
 	public AutorizacaoViaTokenFilter(AuthenticationManager authenticationManager, TokenService tokenService,
 			UserDetailsService userDetailsService) {
 		super(authenticationManager);
@@ -30,17 +34,37 @@ public class AutorizacaoViaTokenFilter extends BasicAuthenticationFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
-		String header = req.getHeader("Authorization");
-		if(header != null && header.startsWith("Bearer ")) {
-			UsernamePasswordAuthenticationToken auth = getAuthentication(header.substring(6));
-			if(auth != null) {
-				SecurityContextHolder.getContext().setAuthentication(auth);
-			}
+		
+		String token = recuperarToken(req);
+		boolean valido = tokenService.isTokenValid(token);
+		System.out.println(valido);
+		if (valido) {
+			authenticated();
+//			autenticarCliente(token);
 		}
+//		if(header != null && header.startsWith("Bearer ")) {
+//			UsernamePasswordAuthenticationToken auth = getAuthentication(header.substring(7));
+//			if(auth != null) {
+//				SecurityContextHolder.getContext().setAuthentication(auth);
+//			}
+//		}
 		chain.doFilter(req, res);
+	}
+	
+	private void autenticarCliente(String token) {
+		getAuthentication(token);
+	}
+
+	private String recuperarToken(HttpServletRequest req) {
+		String token = req.getHeader("Authorization");
+		if (token == null || token.isEmpty() || !token.startsWith("Bearer")) {
+			return null;
+		}
+		return token.substring(7, token.length());
 	}
 
 	private UsernamePasswordAuthenticationToken getAuthentication(String token) {
+		
 		if(tokenService.isTokenValid(token)) {
 			String username = tokenService.getUsername(token);
 			UserDetails user = userDetailsService.loadUserByUsername(username);
@@ -49,6 +73,12 @@ public class AutorizacaoViaTokenFilter extends BasicAuthenticationFilter {
 		return null;
 	}
 	
+//	private void authenticated(String token) {
+//		String nomeUser = tokenService.getUsername(token);
+//		AutenticacaoService usuario =  (AutenticacaoService) authDetailsService.loadUserByUsername(nomeUser);
+//		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
+//		SecurityContextHolder.getContext().setAuthentication(auth);
+//	}
 	public static AutenticacaoService authenticated() {
 		try {
 			return (AutenticacaoService) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
