@@ -9,5 +9,6 @@ import br.cesed.si.pp.model.Aluno;
 public interface AlunoRepository extends JpaRepository<Aluno, Long> {
 
 	Page<Aluno> findByNome(String nome, Pageable paginacao);
+	Aluno findByEmail(String email);
 
 }

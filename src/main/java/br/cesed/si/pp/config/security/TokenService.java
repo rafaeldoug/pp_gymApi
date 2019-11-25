@@ -1,12 +1,10 @@
 package br.cesed.si.pp.config.security;
 
-import java.sql.Date;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import br.cesed.si.pp.model.Pessoa;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -20,12 +18,11 @@ public class TokenService {
 	@Value("${pp.gym.jwt.secret}")
 	private String secret;
 
-	public String gerarToken(Authentication auth) {
+	public String gerarToken(String username) {
 
-		Pessoa logado = (Pessoa) auth.getPrincipal();
 		return Jwts.builder()
 				.setIssuer("API do Sistema de Academia - PP")
-				.setSubject(logado.getId().toString())
+				.setSubject(username)
 				.setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(expiration)))
 				.signWith(SignatureAlgorithm.HS256, secret.getBytes())
 				.compact();
@@ -35,7 +32,7 @@ public class TokenService {
 		Claims claims = getClaims(token);
 		if (claims != null) {
 			String username = claims.getSubject();
-			Date expirationDate = (Date) claims.getExpiration();
+			Date expirationDate = claims.getExpiration();
 			Date now = new Date(System.currentTimeMillis());
 			if (username != null && expirationDate != null && now.before(expirationDate)) {
 				return true;

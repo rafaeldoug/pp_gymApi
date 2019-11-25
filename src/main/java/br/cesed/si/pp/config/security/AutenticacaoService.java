@@ -9,15 +9,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import br.cesed.si.pp.model.enums.RoleUsuario;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 
-@Data
-@AllArgsConstructor
 public class AutenticacaoService implements UserDetails {
 
 	private static final long serialVersionUID = 1L;
-	private Integer id;
+
+	private Long id;
 	private String email;
 	private String senha;
 	private Set<? extends GrantedAuthority> authorities;
@@ -25,28 +22,35 @@ public class AutenticacaoService implements UserDetails {
 	public AutenticacaoService() {
 	}
 
-	public AutenticacaoService(Integer id, String email, String senha, Set<RoleUsuario> perfil) {
+	public AutenticacaoService(Long id, String email, String senha, Set<RoleUsuario> perfil) {
 		this.id = id;
 		this.email = email;
 		this.senha = senha;
-		this.authorities = perfil.stream().map(x -> new SimpleGrantedAuthority(x.getDescricao())).collect(Collectors.toSet());
+		this.authorities = perfil.stream().map(x -> new SimpleGrantedAuthority(x.getDescricao()))
+				.collect(Collectors.toSet());
 	}
 	
+	public Long getId() {
+		return id;
+	}
 
+	public void setAuthorities(Set<? extends GrantedAuthority> authorities) {
+		this.authorities = authorities;
+	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return authorities;
+		return this.authorities;
 	}
 
 	@Override
 	public String getPassword() {
-		return senha;
+		return this.senha;
 	}
 
 	@Override
 	public String getUsername() {
-		return email;
+		return this.email;
 	}
 
 	@Override
@@ -67,10 +71,6 @@ public class AutenticacaoService implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
-	}
-
-	public boolean hasRole(RoleUsuario user) {
-		return getAuthorities().contains(new SimpleGrantedAuthority(user.getDescricao()));
 	}
 
 }

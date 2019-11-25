@@ -36,7 +36,7 @@ public class AutenticacaoViaTokenFilter extends UsernamePasswordAuthenticationFi
 			LoginForm creds = new ObjectMapper().readValue(req.getInputStream(), LoginForm.class);
 
 			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(creds.getEmail(),
-					creds.getPassword(), new ArrayList<>());
+					creds.getSenha(), new ArrayList<>());
 			Authentication auth = authManager.authenticate(authToken);
 			return auth;
 			
@@ -51,8 +51,8 @@ public class AutenticacaoViaTokenFilter extends UsernamePasswordAuthenticationFi
 			Authentication auth) throws IOException, ServletException {
 
 		
-//		String username = ((UsernamePasswordAuthenticationToken) auth.getPrincipal()).getName();
-		String token = tokenService.gerarToken(auth);
+		String username = ((AutenticacaoService) auth.getPrincipal()).getUsername();
+		String token = tokenService.gerarToken(username);
 		res.addHeader("Authorization", "Bearer " + token);
 
 	}

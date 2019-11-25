@@ -7,14 +7,14 @@ public class LoginForm implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String email;
-	private String password;
+	private String senha;
 
 	public LoginForm() {
 	}
 
 	public LoginForm(String email, String senha) {
 		this.email = email;
-		this.password = senha;
+		this.senha = senha;
 	}
 
 	public String getEmail() {
@@ -25,11 +25,11 @@ public class LoginForm implements Serializable {
 		this.email = email;
 	}
 
-	public String getPassword() {
-		return password;
+	public String getSenha() {
+		return senha;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public void setSenha(String password) {
+		this.senha = password;
 	}
 }

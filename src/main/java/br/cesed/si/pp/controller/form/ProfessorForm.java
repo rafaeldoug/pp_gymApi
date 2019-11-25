@@ -74,7 +74,7 @@ public class ProfessorForm {
 		String novaSenha = new BCryptPasswordEncoder().encode(senha);
 		professor.setSenha(novaSenha);
 		professor.setEmail(email);
-		professor.addTipo(RoleUsuario.PROFESSOR);
+		professor.addTipo(RoleUsuario.ADMIN);
 		
 		return professor;
 	}

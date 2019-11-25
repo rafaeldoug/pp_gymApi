@@ -9,5 +9,6 @@ import br.cesed.si.pp.model.Professor;
 public interface ProfessorRepository extends JpaRepository<Professor, Long>{
 
 	List<Professor> findByNome(String nome);
+	Professor findByEmail(String email);
 
 }

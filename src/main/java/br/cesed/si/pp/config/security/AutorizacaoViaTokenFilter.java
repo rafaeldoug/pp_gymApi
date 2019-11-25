@@ -48,5 +48,13 @@ public class AutorizacaoViaTokenFilter extends BasicAuthenticationFilter {
 		}
 		return null;
 	}
+	
+	public static AutenticacaoService authenticated() {
+		try {
+			return (AutenticacaoService) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 }

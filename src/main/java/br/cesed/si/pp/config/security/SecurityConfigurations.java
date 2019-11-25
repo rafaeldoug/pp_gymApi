@@ -28,6 +28,12 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private UserDetailsService userDetailsService;
+	
+	public static final String[] PUBLIC_MATCHERS = {
+			"/exercicios",
+			"/swagger-ui.html#/",
+			"/login",
+		};
 
 	@Bean
 	public UserDetailsService userDetailsService() {
@@ -53,9 +59,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 		http.cors().configurationSource(configurationSource())
 				.and().csrf().disable().authorizeRequests()
 				.antMatchers("/").permitAll()
-				.antMatchers(HttpMethod.GET, "/exercicios").permitAll()
-				.antMatchers(HttpMethod.GET, "/professores").permitAll()
-//				.antMatchers(HttpMethod.POST, "/alunos").permitAll()
+				.antMatchers("/login").permitAll()
 				.antMatchers(HttpMethod.POST, "/auth").permitAll()
 				.antMatchers(HttpMethod.POST, "/professores").permitAll()
 				.anyRequest().authenticated()
@@ -65,27 +69,14 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
 
-//	// configurar autorizacao
-//	@Override
-//	protected void configure(HttpSecurity http) throws Exception {
-//		http.authorizeRequests()
-//		.antMatchers(HttpMethod.GET, "/**").permitAll()
-//		.antMatchers(HttpMethod.POST, "/**").permitAll()
-//		.antMatchers(HttpMethod.PUT, "/**").permitAll()
-//		.antMatchers(HttpMethod.DELETE, "/**").permitAll()
-//		.antMatchers(HttpMethod.PATCH, "/**").permitAll()
-////		.antMatchers(HttpMethod.POST, "/alunos").permitAll()
-////		.antMatchers(HttpMethod.POST, "/treinos").permitAll()
-//		.anyRequest().authenticated()
-//		.and().csrf().disable()
-//		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//		.and().addFilterBefore(new AutenticacaoViaTokenFilter(tokenService, usuarioRepository), UsernamePasswordAuthenticationFilter.class);
-//	}
 
 	// configurar recursos estaticos (js, css, imagens etc)
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/**.html", "/v2/api-docs", "/webjars/**", "/configuration/**",
+		web.ignoring().antMatchers("/**.html", 
+				"/v2/api-docs", 
+				"/webjars/**", 
+				"/configuration/**",
 				"/swagger-resources/**");
 	}
 
@@ -102,6 +93,6 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	}
 
 //	public static void main(String[] args) {
-//		System.out.println(new BCryptPasswordEncoder().encode("passtest"));
+//		System.out.println(new BCryptPasswordEncoder().encode("admin"));
 //	}
 }

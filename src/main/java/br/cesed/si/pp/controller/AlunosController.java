@@ -30,14 +30,13 @@ import br.cesed.si.pp.controller.form.AlunoForm;
 import br.cesed.si.pp.controller.form.AtualizaAlunoForm;
 import br.cesed.si.pp.controller.form.AtualizaTreinoAluno;
 import br.cesed.si.pp.model.Aluno;
-import br.cesed.si.pp.model.enums.RoleUsuario;
 import br.cesed.si.pp.repository.AlunoRepository;
 import br.cesed.si.pp.repository.TreinoRepository;
 
 @RestController
 @RequestMapping("/alunos")
 public class AlunosController {
-	
+
 	private static final int INIT_PAGE = 0;
 	private static final int ITEMS_SIZE = 10;
 
@@ -46,10 +45,11 @@ public class AlunosController {
 
 	@Autowired
 	private TreinoRepository treinoRepository;
-	
+
+	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_PROFESSOR')")
 	@GetMapping
 	public Page<AlunoDto> lista(@RequestParam(required = false) String nome) {
-		
+
 		Pageable paginacao = PageRequest.of(INIT_PAGE, ITEMS_SIZE);
 
 		if (nome == null) {
@@ -66,8 +66,8 @@ public class AlunosController {
 	@PostMapping
 	@Transactional
 	public ResponseEntity<AlunoDto> cadastrar(@RequestBody AlunoForm form, UriComponentsBuilder uriBuilder) {
+		
 		Aluno aluno = form.converter(treinoRepository);
-//		aluno.addTipo(RoleUsuario.PADRAO);
 		alunoRepository.save(aluno);
 
 		URI uri = uriBuilder.path("/alunos/{id}").buildAndExpand(aluno.getId()).toUri();
@@ -98,17 +98,18 @@ public class AlunosController {
 		return ResponseEntity.notFound().build();
 
 	}
-	
+
 	@PatchMapping("/{matricula}")
 	@Transactional
-	public ResponseEntity<AlunoDto> atualizarTreino(@PathVariable Long matricula, @RequestBody @Valid AtualizaTreinoAluno form) {
-		
+	public ResponseEntity<AlunoDto> atualizarTreino(@PathVariable Long matricula,
+			@RequestBody @Valid AtualizaTreinoAluno form) {
+
 		Optional<Aluno> optional = alunoRepository.findById(matricula);
-		if(optional.isPresent()) {
+		if (optional.isPresent()) {
 			Aluno aluno = form.atualizar(matricula, alunoRepository, treinoRepository);
 			return ResponseEntity.ok(new AlunoDto(aluno));
 		}
-		
+
 		return ResponseEntity.notFound().build();
 	}
 
@@ -125,4 +126,5 @@ public class AlunosController {
 		return ResponseEntity.notFound().build();
 
 	}
+
 }

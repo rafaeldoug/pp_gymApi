@@ -25,7 +25,6 @@ import br.cesed.si.pp.controller.dto.ProfessorDto;
 import br.cesed.si.pp.controller.form.AtualizaProfessorForm;
 import br.cesed.si.pp.controller.form.ProfessorForm;
 import br.cesed.si.pp.model.Professor;
-import br.cesed.si.pp.model.enums.RoleUsuario;
 import br.cesed.si.pp.repository.ProfessorRepository;
 
 @RestController
