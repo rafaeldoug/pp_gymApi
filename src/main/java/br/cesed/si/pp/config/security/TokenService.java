@@ -1,34 +1,39 @@
 package br.cesed.si.pp.config.security;
 
+
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
-@Component
+@Service
 public class TokenService {
 
 	@Value("${pp.gym.jwt.expiration}")
-	private Long expiration;
+	private static String expiration;
 
 	@Value("${pp.gym.jwt.secret}")
-	private String secret;
+	private static String secret;
 
-	public String gerarToken(String username) {
-
+	public String gerarToken(Authentication authentication) {
+		
+		AutenticacaoService logado = (AutenticacaoService) authentication.getPrincipal();
 		return Jwts.builder()
-				.setIssuer("API do Sistema de Academia - PP")
-				.setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + expiration))
-				.signWith(SignatureAlgorithm.HS256, secret.getBytes())
+				.setIssuer("API Projeto PP | GYM")
+				.setSubject(logado.getUsername())
+				.setIssuedAt(new Date(System.currentTimeMillis()))
+				.setExpiration(new Date(2020,11,31))
+				.signWith(SignatureAlgorithm.HS256, "^db@Rv?7L<z?Q;v=s5\"`hLHG,Gkh3|R;Xk![{R?w+Yv}*CvV3#RCanJa3zaZHed")
 				.compact();
 	}
+	
 
-	public boolean isTokenValid(String token) {
+	public boolean isTokenValido(String token) {
 		Claims claims = getClaims(token);
 		if (claims != null) {
 			String username = claims.getSubject();
@@ -40,10 +45,10 @@ public class TokenService {
 		}
 		return false;
 	}
-
+	
 	private Claims getClaims(String token) {
 		try {
-			return Jwts.parser().setSigningKey(secret.getBytes()).parseClaimsJws(token).getBody();
+			return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 		} catch (Exception e) {
 			return null;
 		}
@@ -57,5 +62,6 @@ public class TokenService {
 		return null;
 
 	}
+	
 
 }

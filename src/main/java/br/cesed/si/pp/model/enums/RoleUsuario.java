@@ -35,4 +35,9 @@ public enum RoleUsuario {
 
 		throw new IllegalArgumentException("Id Invalido: " + cod);
 	}
+
+//	@Override
+//	public String getAuthority() {
+//		return this.descricao;
+//	}
 }

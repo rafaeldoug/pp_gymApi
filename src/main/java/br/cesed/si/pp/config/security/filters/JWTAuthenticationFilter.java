@@ -1,4 +1,4 @@
-package br.cesed.si.pp.config.security;
+package br.cesed.si.pp.config.security.filters;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,16 +16,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.cesed.si.pp.controller.dto.LoginForm;
+import br.cesed.si.pp.config.security.TokenService;
+import br.cesed.si.pp.controller.form.LoginForm;
 
-public class AutenticacaoViaTokenFilter extends UsernamePasswordAuthenticationFilter {
+public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-	private AuthenticationManager authManager;
+	private AuthenticationManager authenticationManager;
 
 	private TokenService tokenService;
 
-	public AutenticacaoViaTokenFilter(AuthenticationManager auth, TokenService tokenService) {
-		this.authManager = auth;
+	public JWTAuthenticationFilter(AuthenticationManager auth, TokenService tokenService) {
+		this.authenticationManager = auth;
 		this.tokenService = tokenService;
 	}
 	
@@ -37,7 +38,8 @@ public class AutenticacaoViaTokenFilter extends UsernamePasswordAuthenticationFi
 
 			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(creds.getEmail(),
 					creds.getSenha(), new ArrayList<>());
-			Authentication auth = authManager.authenticate(authToken);
+			Authentication auth = authenticationManager.authenticate(authToken);
+			
 			return auth;
 			
 		} catch (IOException e) {
@@ -50,11 +52,9 @@ public class AutenticacaoViaTokenFilter extends UsernamePasswordAuthenticationFi
 	protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
 			Authentication auth) throws IOException, ServletException {
 
-		
-		String username = ((AutenticacaoService) auth.getPrincipal()).getUsername();
-		String token = tokenService.gerarToken(username);
+		String token = tokenService.gerarToken(auth);
 		res.addHeader("Authorization", "Bearer " + token);
 
 	}
-	
+
 }

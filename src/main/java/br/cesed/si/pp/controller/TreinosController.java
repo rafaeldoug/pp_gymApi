@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +41,7 @@ public class TreinosController {
 		return TreinoDto.converter(treinos);
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_PROFESSOR')")
 	@PostMapping
 	public ResponseEntity<TreinoDto> cadastrar(@RequestBody @Valid TreinoForm form, UriComponentsBuilder uriBuilder) {
 		Treino treino = form.converter(professorRepository);

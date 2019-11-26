@@ -34,6 +34,7 @@ public class ProfessoresController {
 	@Autowired
 	ProfessorRepository professorRepository;
 	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@GetMapping
 	public List<ProfessorDto> lista(String nome) {
 		if (nome == null) {

@@ -1,6 +1,7 @@
 package br.cesed.si.pp.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -19,11 +20,16 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import br.cesed.si.pp.model.enums.RoleUsuario;
+import br.cesed.si.pp.config.security.filters.JWTAuthenticationFilter;
+import br.cesed.si.pp.config.security.filters.JWTAuthorizationFilter;
 
 @Configuration
+@EnableAutoConfiguration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(
+        securedEnabled = true,
+        jsr250Enabled = true,
+        prePostEnabled = true)
 public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 
 	@Autowired
@@ -31,15 +37,6 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private UserDetailsService userDetailsService;
-	
-	@Autowired
-	private AuthEntryPointFilter entryPoint;
-	
-//	public static final String[] PUBLIC_MATCHERS = {
-//			"/exercicios",
-//			"/swagger-ui.html#/",
-//			"/login",
-//		};
 
 	@Bean
 	public UserDetailsService userDetailsService() {
@@ -62,32 +59,28 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	// configurar autorizacao
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.cors().configurationSource(configurationSource())
-				.and().csrf().disable()
+		http
+				.cors().configurationSource(configurationSource())
+				.and()
+				.csrf().disable()
 				.authorizeRequests()
+//				.antMatchers("/alunos/**").access("hasRole('ROLE_ADMIN')")
+//				.antMatchers("/professores/**").access("hasRole('ROLE_ADMIN')")
 				.antMatchers("/").permitAll()
-//				.antMatchers("/login").permitAll()
-				.antMatchers(HttpMethod.GET, "/alunos/**").hasAnyAuthority(RoleUsuario.ADMIN.getDescricao())
-				.antMatchers(HttpMethod.GET, "/exercicios").permitAll()
+				.antMatchers("/login").permitAll()
+				.antMatchers(HttpMethod.POST, "/login").permitAll()
 				.antMatchers(HttpMethod.POST, "/auth").permitAll()
-				.antMatchers(HttpMethod.POST, "/professores").permitAll()
 				.anyRequest().authenticated()
 				.and()
-				.exceptionHandling().authenticationEntryPoint(entryPoint).and()
-				.addFilterBefore(new AutenticacaoViaTokenFilter(authenticationManager(), tokenService), UsernamePasswordAuthenticationFilter.class)
-				.addFilter(new AutorizacaoViaTokenFilter(authenticationManager(), tokenService, userDetailsService))
-				.addFilter(new AutenticacaoViaTokenFilter(authenticationManager(), tokenService))
+				.addFilterBefore(new JWTAuthorizationFilter(authenticationManager(), tokenService, userDetailsService), UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(new JWTAuthenticationFilter(authenticationManager(), tokenService), UsernamePasswordAuthenticationFilter.class)
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
-
 
 	// configurar recursos estaticos (js, css, imagens etc)
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/**.html", 
-				"/v2/api-docs", 
-				"/webjars/**", 
-				"/configuration/**",
+		web.ignoring().antMatchers("/**.html", "/v2/api-docs", "/webjars/**", "/configuration/**",
 				"/swagger-resources/**");
 	}
 
@@ -103,8 +96,8 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 		return source;
 	}
 
-//	 gerador de senha encodada
+////	 gerador de senha encodada
 //	public static void main(String[] args) {
-//		System.out.println(new BCryptPasswordEncoder().encode("admin"));
+//		System.out.println(new BCryptPasswordEncoder().encode("passtest"));
 //	}
 }

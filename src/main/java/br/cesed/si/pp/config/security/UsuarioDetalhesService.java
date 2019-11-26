@@ -12,7 +12,7 @@ import br.cesed.si.pp.repository.AlunoRepository;
 import br.cesed.si.pp.repository.ProfessorRepository;
 
 @Service
-public class AutenticacaoDetalhesService implements UserDetailsService {
+public class UsuarioDetalhesService implements UserDetailsService {
 	
 	@Autowired
 	AlunoRepository alunoRepository;

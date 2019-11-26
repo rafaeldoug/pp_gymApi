@@ -9,7 +9,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import br.cesed.si.pp.model.enums.RoleUsuario;
+import lombok.Data;
 
+@Data
 public class AutenticacaoService implements UserDetails {
 
 	private static final long serialVersionUID = 1L;
@@ -33,9 +35,9 @@ public class AutenticacaoService implements UserDetails {
 	public Long getId() {
 		return id;
 	}
-
-	public void setAuthorities(Set<? extends GrantedAuthority> authorities) {
-		this.authorities = authorities;
+	
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	@Override
@@ -71,6 +73,10 @@ public class AutenticacaoService implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+	
+	public boolean hasRole(RoleUsuario user) {
+		return getAuthorities().contains(new SimpleGrantedAuthority(user.getDescricao()));
 	}
 
 }

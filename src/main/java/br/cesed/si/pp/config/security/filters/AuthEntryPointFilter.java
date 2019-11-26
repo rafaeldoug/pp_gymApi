@@ -1,4 +1,4 @@
-package br.cesed.si.pp.config.security;
+package br.cesed.si.pp.config.security.filters;
 
 import java.io.IOException;
 
