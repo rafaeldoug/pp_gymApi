@@ -48,6 +48,7 @@ public class ProfessoresController {
 
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@PostMapping
 	@Transactional
 	public ResponseEntity<ProfessorDto> cadastrar(@RequestBody ProfessorForm form,
@@ -61,6 +62,7 @@ public class ProfessoresController {
 
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@GetMapping("/{matricula}")
 	public ResponseEntity<DetalhesDoProfessorDto> detalhar(@PathVariable Long matricula) {
 		Optional<Professor> professor = professorRepository.findById(matricula);

@@ -48,6 +48,20 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	protected AuthenticationManager authenticationManager() throws Exception {
 		return super.authenticationManager();
 	}
+	
+	@Autowired
+	public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
+
+	    auth.inMemoryAuthentication()
+	            .withUser("admin")
+	            .password("{noop}admin")
+	            .authorities("ADMIN");
+
+	    auth.inMemoryAuthentication()
+	            .withUser("user")
+	            .password("{noop}user")
+	            .authorities("USER");
+	  }
 
 	// configurar autenticacao
 	@Override
@@ -64,6 +78,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 				.and()
 				.csrf().disable()
 				.authorizeRequests()
+				.antMatchers(HttpMethod.OPTIONS).permitAll()
 //				.antMatchers("/alunos/**").access("hasRole('ROLE_ADMIN')")
 //				.antMatchers("/professores/**").access("hasRole('ROLE_ADMIN')")
 				.antMatchers("/").permitAll()
