@@ -38,7 +38,7 @@ public class ExerciciosController {
 		return ExercicioDto.conveter(exercicios);
 	}
 
-	@PreAuthorize("hasRole('ROLE_PROFESSOR')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_PROFESSOR')")
 	@PostMapping
 	@Transactional
 	public ResponseEntity<ExercicioDto> cadastrar(ExercicioForm form, UriComponentsBuilder uriBuilder) {

@@ -15,10 +15,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class TokenService {
 
 	@Value("${pp.gym.jwt.expiration}")
-	private static String expiration;
+	private Long expiration;
 
 	@Value("${pp.gym.jwt.secret}")
-	private static String secret;
+	private String secret;
 
 	public String gerarToken(Authentication authentication) {
 		
@@ -27,8 +27,8 @@ public class TokenService {
 				.setIssuer("API Projeto PP | GYM")
 				.setSubject(logado.getUsername())
 				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(2020,11,31))
-				.signWith(SignatureAlgorithm.HS256, "^db@Rv?7L<z?Q;v=s5\"`hLHG,Gkh3|R;Xk![{R?w+Yv}*CvV3#RCanJa3zaZHed")
+				.setExpiration(new Date(System.currentTimeMillis() + expiration))
+				.signWith(SignatureAlgorithm.HS256, secret)
 				.compact();
 	}
 	
